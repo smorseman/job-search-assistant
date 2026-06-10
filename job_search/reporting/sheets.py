@@ -33,6 +33,14 @@ SHEET_HEADERS = [
     "notes",
 ]
 
+# Columns James owns — system writes them only on first insert, then leaves alone
+JAMES_OWNED_COLUMNS = {"status", "notes"}
+STATUS_COL_IDX = SHEET_HEADERS.index("status")
+NOTES_COL_IDX = SHEET_HEADERS.index("notes")
+RESUME_COL_IDX = SHEET_HEADERS.index("resume_link")
+COVER_COL_IDX = SHEET_HEADERS.index("cover_letter_link")
+ID_COL_IDX = SHEET_HEADERS.index("canonical_job_id")
+
 
 class SheetsLogger:
     def __init__(self):
@@ -90,15 +98,129 @@ class SheetsLogger:
         except HttpError as e:
             logger.error("Sheets API error: %s", e)
 
-    def upsert_row(self, job_data: dict, resume_url: str | None = None, cover_url: str | None = None) -> None:
-        """Upsert a job row by canonical_job_id. Idempotent."""
+    def upsert_row(
+        self,
+        job_data: dict,
+        resume_url: str | None = None,
+        cover_url: str | None = None,
+    ) -> None:
+        """Upsert a job row by canonical_job_id. Idempotent.
+
+        Never overwrites James's `status` or `notes` columns once a row
+        exists — those are his to edit; we read them back via sync.
+        """
         if not settings.TRACKER_SHEET_ID:
             logger.debug("TRACKER_SHEET_ID not set — skipping Sheet upsert")
             return
 
         job_id = job_data["canonical_job_id"]
-        existing_row = self._find_row(job_id)
+        existing_row_idx = self._find_row(job_id)
+        existing_values = self._read_row(existing_row_idx) if existing_row_idx else None
 
+        row = self._build_row(job_data, resume_url, cover_url)
+
+        if existing_values:
+            # Preserve James-owned columns (status, notes) and any existing doc links
+            # the caller didn't pass — never blow away prior generation links.
+            row[STATUS_COL_IDX] = existing_values[STATUS_COL_IDX] or row[STATUS_COL_IDX]
+            row[NOTES_COL_IDX] = existing_values[NOTES_COL_IDX] if len(existing_values) > NOTES_COL_IDX else ""
+            if not resume_url and len(existing_values) > RESUME_COL_IDX:
+                row[RESUME_COL_IDX] = existing_values[RESUME_COL_IDX]
+            if not cover_url and len(existing_values) > COVER_COL_IDX:
+                row[COVER_COL_IDX] = existing_values[COVER_COL_IDX]
+
+        last_col = self._col_letter(len(SHEET_HEADERS) - 1)
+        try:
+            if existing_row_idx:
+                self._sheets().values().update(
+                    spreadsheetId=settings.TRACKER_SHEET_ID,
+                    range=f"A{existing_row_idx}:{last_col}{existing_row_idx}",
+                    valueInputOption="RAW",
+                    body={"values": [row]},
+                ).execute()
+            else:
+                self._sheets().values().append(
+                    spreadsheetId=settings.TRACKER_SHEET_ID,
+                    range="A1",
+                    valueInputOption="RAW",
+                    insertDataOption="INSERT_ROWS",
+                    body={"values": [row]},
+                ).execute()
+        except HttpError as e:
+            logger.error("Sheets upsert error for %s: %s", job_id, e)
+
+    def update_doc_links(self, job_id: str, resume_url: str | None, cover_url: str | None) -> None:
+        """Write only the resume_link and cover_letter_link columns for a row."""
+        if not settings.TRACKER_SHEET_ID:
+            return
+        row_idx = self._find_row(job_id)
+        if not row_idx:
+            logger.warning("update_doc_links: %s not in sheet", job_id)
+            return
+        resume_col = self._col_letter(RESUME_COL_IDX)
+        cover_col = self._col_letter(COVER_COL_IDX)
+        try:
+            self._sheets().values().batchUpdate(
+                spreadsheetId=settings.TRACKER_SHEET_ID,
+                body={
+                    "valueInputOption": "RAW",
+                    "data": [
+                        {
+                            "range": f"{resume_col}{row_idx}",
+                            "values": [[resume_url or ""]],
+                        },
+                        {
+                            "range": f"{cover_col}{row_idx}",
+                            "values": [[cover_url or ""]],
+                        },
+                    ],
+                },
+            ).execute()
+        except HttpError as e:
+            logger.error("update_doc_links failed for %s: %s", job_id, e)
+
+    def read_status_column(self) -> list[tuple[str, str]]:
+        """Return [(canonical_job_id, status_cell_value), ...] for every data row."""
+        if not settings.TRACKER_SHEET_ID:
+            return []
+        id_col = self._col_letter(ID_COL_IDX)
+        status_col = self._col_letter(STATUS_COL_IDX)
+        try:
+            result = self._sheets().values().batchGet(
+                spreadsheetId=settings.TRACKER_SHEET_ID,
+                ranges=[f"{id_col}2:{id_col}", f"{status_col}2:{status_col}"],
+            ).execute()
+            id_values = result["valueRanges"][0].get("values", [])
+            status_values = result["valueRanges"][1].get("values", [])
+            out: list[tuple[str, str]] = []
+            for i, id_row in enumerate(id_values):
+                job_id = id_row[0] if id_row else ""
+                status = status_values[i][0] if i < len(status_values) and status_values[i] else ""
+                if job_id:
+                    out.append((job_id, status))
+            return out
+        except HttpError as e:
+            logger.error("read_status_column failed: %s", e)
+            return []
+
+    def _read_row(self, row_idx: int) -> list[str] | None:
+        last_col = self._col_letter(len(SHEET_HEADERS) - 1)
+        try:
+            result = self._sheets().values().get(
+                spreadsheetId=settings.TRACKER_SHEET_ID,
+                range=f"A{row_idx}:{last_col}{row_idx}",
+            ).execute()
+            values = result.get("values", [])
+            return values[0] if values else None
+        except HttpError:
+            return None
+
+    def _build_row(
+        self,
+        job_data: dict,
+        resume_url: str | None,
+        cover_url: str | None,
+    ) -> list:
         location = f"{job_data.get('location_city', '')}, {job_data.get('location_state', '')}".strip(", ")
         sal_min = job_data.get("salary_min")
         sal_max = job_data.get("salary_max")
@@ -114,8 +236,8 @@ class SheetsLogger:
         if job_data.get("ko_degree_required"):
             ko_parts.append(f"Degree: {job_data['ko_degree_required']}")
 
-        row = [
-            job_id,
+        return [
+            job_data["canonical_job_id"],
             job_data.get("company", ""),
             job_data.get("title", ""),
             job_data.get("source", ""),
@@ -135,29 +257,20 @@ class SheetsLogger:
             "; ".join(ko_parts),
             round(job_data.get("benefit_score") or 0, 3),
             round(job_data.get("career_trajectory_score") or 0, 3),
-            "",  # notes — James fills this
+            "",
         ]
 
-        try:
-            if existing_row:
-                # Update in place, but preserve James's notes column (last col)
-                range_addr = f"A{existing_row}:{chr(ord('A') + len(SHEET_HEADERS) - 2)}{existing_row}"
-                self._sheets().values().update(
-                    spreadsheetId=settings.TRACKER_SHEET_ID,
-                    range=range_addr,
-                    valueInputOption="RAW",
-                    body={"values": [row[:-1]]},  # preserve notes
-                ).execute()
-            else:
-                self._sheets().values().append(
-                    spreadsheetId=settings.TRACKER_SHEET_ID,
-                    range="A1",
-                    valueInputOption="RAW",
-                    insertDataOption="INSERT_ROWS",
-                    body={"values": [row]},
-                ).execute()
-        except HttpError as e:
-            logger.error("Sheets upsert error for %s: %s", job_id, e)
+    @staticmethod
+    def _col_letter(idx: int) -> str:
+        """0-indexed column number → spreadsheet letter (A, B, ..., Z, AA, ...)."""
+        result = ""
+        n = idx
+        while True:
+            result = chr(ord("A") + n % 26) + result
+            n = n // 26 - 1
+            if n < 0:
+                break
+        return result
 
     def _find_row(self, canonical_job_id: str) -> int | None:
         """Return 1-based row number if job_id exists, else None."""

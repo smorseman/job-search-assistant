@@ -77,7 +77,14 @@ class Ingestor:
 
     def _iter_all_sources(self):
         """Yield CanonicalJob from all configured sources in priority order."""
-        from job_search.adapters import USAJobsAdapter, AdzunaAdapter, GreenhouseAdapter, LeverAdapter, WorkdayAdapter
+        from job_search.adapters import (
+            USAJobsAdapter,
+            AdzunaAdapter,
+            GreenhouseAdapter,
+            LeverAdapter,
+            WorkdayAdapter,
+            EmailAlertsAdapter,
+        )
 
         # 1. Public sector (USAJOBS)
         yield from self._run_adapter(USAJobsAdapter())
@@ -101,6 +108,9 @@ class Ingestor:
             from job_search.models import ATSType, ATSTier
             if firm.ats_tier == ATSTier.YELLOW and firm.ats_type == ATSType.WORKDAY:
                 yield from self._run_adapter(WorkdayAdapter(firm))
+
+        # 5. Email alerts — backstop for LinkedIn/Indeed (ruled out for direct scraping)
+        yield from self._run_adapter(EmailAlertsAdapter())
 
     def _run_adapter(self, adapter):
         source_name = adapter.source_name

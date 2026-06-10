@@ -4,6 +4,7 @@ from .lever import LeverAdapter
 from .usajobs import USAJobsAdapter
 from .adzuna import AdzunaAdapter
 from .workday import WorkdayAdapter
+from .email_alerts import EmailAlertsAdapter
 
 __all__ = [
     "BaseAdapter",
@@ -12,4 +13,5 @@ __all__ = [
     "USAJobsAdapter",
     "AdzunaAdapter",
     "WorkdayAdapter",
+    "EmailAlertsAdapter",
 ]

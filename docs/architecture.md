@@ -2,21 +2,35 @@
 
 ## Current architecture (v0.1): deterministic pipeline, LLM as a focused tool
 
-The daily pipeline is **plain Python with two narrowly-scoped LLM calls** per
-high-fit posting. Nothing else in the system invokes a model.
+The daily pipeline is **plain Python**. LLM calls happen ONLY for jobs James
+has actually flagged to apply to — not for every high-fit posting surfaced.
 
 ```
 cron @ 7 AM
    └─ scripts/run_daily.py
-       ├─ Ingestor           ← HTTP fetches, schema normalization, dedup (Python)
-       ├─ Scorer             ← discipline + location + benefit + trajectory (Python)
-       ├─ FollowUpEngine     ← state machine math (Python)
-       └─ DailyReporter
-           ├─ for each top-scored job:
-           │   ├─ Claude API → resume.json    ← LLM call #1
-           │   └─ Claude API → cover.json     ← LLM call #2
-           └─ Upload to Drive, update Sheet (Python)
+       ├─ Ingestor              ← HTTP fetches, schema normalization, dedup (Python)
+       ├─ Scorer                ← discipline + location + benefit + trajectory (Python)
+       ├─ SelectionProcessor
+       │    ├─ sync_from_sheet  ← read Sheet status col → DB state (Python)
+       │    └─ generate_for_selected
+       │         └─ for each job James flagged "apply":
+       │              ├─ Claude API → resume.json    ← LLM call #1
+       │              └─ Claude API → cover.json     ← LLM call #2
+       ├─ FollowUpEngine        ← state machine math (Python)
+       └─ DailyReporter         ← Surface new top-N to Sheet (no LLM)
 ```
+
+### James's review loop
+
+Day N:    cron presents top-N jobs to the Sheet (status="presented")
+Day N:    James reviews on phone/laptop, edits status column:
+            "apply"   → wants docs generated
+            "skip"    → not interested (terminal)
+            "applied" → already submitted, start follow-up clock
+Day N+1:  cron syncs his edits, generates docs ONLY for the "apply" rows,
+          uploads to Drive, links back in the Sheet
+
+He can also short-circuit via CLI: `jsa apply <job_id>` generates docs immediately.
 
 ### Why this shape (vs. agent-driven end-to-end)
 
@@ -24,7 +38,7 @@ cron @ 7 AM
 |---|---|
 | Hard no-fabrication rule | LLM only sees the profile as ground-truth JSON. Strictly bounded — can't invent jobs, scores, employers. |
 | Self-healing must never become self-evasion | Failure modes are explicit (circuit breaker classes). Agentic flow can fail in surprising ways. |
-| Cost | ~30 LLM calls/day × ~$0.06 ≈ ~$60/month with caching. Agentic flow could be 10–50× that. |
+| Cost | LLM calls happen only when James opts to apply (~5/week ≈ ~$3/month), down from ~$60 in the eager-generation model. Agentic flow could be 50–100× that. |
 | Auditability | Every score reproducible from DB. Agentic decisions are harder to re-derive. |
 | Reliability | A cron that must finish in <10 min should be deterministic. |
 | Testability | 46+ tests today; agentic flow is much harder to assert on. |

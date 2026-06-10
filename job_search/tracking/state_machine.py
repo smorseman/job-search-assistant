@@ -9,7 +9,7 @@ from job_search.models import AppState
 # Valid transitions: current_state → set of allowed next states
 VALID_TRANSITIONS: dict[str, set[str]] = {
     AppState.DISCOVERED.value:   {AppState.PRESENTED.value},
-    AppState.PRESENTED.value:    {AppState.SELECTED.value, AppState.DISCOVERED.value},
+    AppState.PRESENTED.value:    {AppState.SELECTED.value, AppState.DISCOVERED.value, AppState.REJECTED.value},
     AppState.SELECTED.value:     {AppState.APPLIED.value, AppState.PRESENTED.value},
     AppState.APPLIED.value:      {AppState.ACKNOWLEDGED.value, AppState.SCREEN.value, AppState.REJECTED.value, AppState.GHOSTED.value},
     AppState.ACKNOWLEDGED.value: {AppState.SCREEN.value, AppState.REJECTED.value, AppState.GHOSTED.value},

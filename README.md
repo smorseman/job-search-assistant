@@ -71,11 +71,13 @@ jsa score-location "Cleveland" --state OH --scheme career_only
 - [x] 1. Master profile schema (`profile/james_profile.yaml`)
 - [x] 2. Canonical schema + SQLite + Greenhouse adapter (vertical slice)
 - [x] 3. USAJOBS + Adzuna adapters; dedup + repost detection
-- [x] 4. Document generation + keyword tiering; daily report
+- [x] 4. Document generation + keyword tiering; daily report (now selection-driven, not eager)
 - [x] 5. Google Sheets logging + Drive snapshots + follow-up engine
 - [x] 6. Employer discovery pipeline + registry; remaining Green adapters
 - [x] 7. Workday (Yellow) adapter with throttling; self-healing / circuit breaker
-- [ ] 8. Email-alert parser (Gmail); Lever/Ashby/SmartRecruiters adapters; funnel stats email
+- [x] 8a. Gmail email-alert parser (LinkedIn / Indeed / ZipRecruiter / generic)
+- [ ] 8b. Remaining Green-tier adapters (Ashby / SmartRecruiters / Workable / Recruitee)
+- [ ] 8c. Funnel-stats reporting + GitHub Actions CI
 
 ## See also
 

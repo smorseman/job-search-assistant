@@ -75,11 +75,70 @@ def ingest(dry_run: bool):
 
 @cli.command()
 def report():
-    """Generate today's daily review report and update Google Sheets."""
+    """Present today's top-scored postings to the Sheet (no doc generation)."""
     from job_search.reporting import DailyReporter
     reporter = DailyReporter()
     stats = reporter.run()
     console.print(stats)
+
+
+@cli.command(name="sync-sheet")
+def sync_sheet():
+    """Pull James's status edits from the Sheet into the DB."""
+    from job_search.reporting import SelectionProcessor
+    proc = SelectionProcessor()
+    stats = proc.sync_from_sheet()
+    console.print(stats)
+
+
+@cli.command()
+@click.argument("job_ids", nargs=-1)
+@click.option("--force", is_flag=True, help="Regenerate even if docs already exist")
+def generate(job_ids: tuple[str, ...], force: bool):
+    """Generate resume + cover letter for selected jobs (LLM calls).
+
+    With no arguments, generates docs for every job in 'selected' state
+    that doesn't already have docs. Pass specific job IDs to target only those.
+    """
+    from job_search.reporting import SelectionProcessor
+    proc = SelectionProcessor()
+    stats = proc.generate_for_selected(
+        job_ids=list(job_ids) if job_ids else None,
+        force=force,
+    )
+    console.print(
+        f"[bold]Generated {stats['generated']} sets of docs[/bold] "
+        f"({stats['errors']} errors)"
+    )
+    for doc in stats["docs"]:
+        console.print(
+            f"  [green]{doc['title']}[/green] @ {doc['company']}\n"
+            f"    Resume: {doc['resume_url']}\n"
+            f"    Cover:  {doc['cover_url']}"
+        )
+
+
+@cli.command()
+@click.argument("job_id")
+def apply(job_id: str):
+    """Mark a job as 'selected' and generate docs immediately."""
+    from job_search.db import get_db
+    from job_search.tracking import advance_state
+    from job_search.reporting import SelectionProcessor
+
+    with get_db() as db:
+        ok = advance_state(db, job_id, "selected", note="jsa apply CLI")
+        if not ok:
+            console.print(f"[red]Could not advance {job_id} to 'selected' — invalid transition[/red]")
+            return
+
+    proc = SelectionProcessor()
+    stats = proc.generate_for_selected(job_ids=[job_id])
+    if stats["generated"] > 0:
+        doc = stats["docs"][0]
+        console.print(f"[green]Docs ready:[/green]\n  Resume: {doc['resume_url']}\n  Cover:  {doc['cover_url']}")
+    else:
+        console.print("[red]Doc generation failed — see logs[/red]")
 
 
 @cli.command()
