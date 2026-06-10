@@ -79,7 +79,11 @@ jsa score-location "Cleveland" --state OH --scheme career_only
 
 ## See also
 
+- `SETUP.md` — full pre-flight checklist for API keys + first run
 - `DEPLOY.md` — DigitalOcean setup + cron configuration
-- `profile/james_profile.yaml` — candidate fact base (fill in before first run)
+- `docs/architecture.md` — LLM scope today + planned agentic extensions
+- `docs/location_scoring.md` — 50-metro location-scoring methodology
+- `profile/james_profile.example.yaml` — candidate fact base template
 - `config/firms.yaml` — employer registry (config-as-code)
 - `config/scoring.yaml` — scoring weight overrides
+- `config/cities.yaml` — location framework data

@@ -26,6 +26,35 @@ def cli():
 
 
 @cli.command()
+def preflight():
+    """Check that every API key, config file, and profile field is ready."""
+    from job_search.preflight import run_preflight
+    report = run_preflight()
+
+    icon = {True: "[green]✓[/green]", False: "[red]✗[/red]"}
+    by_sev = {"required": [], "recommended": [], "optional": []}
+    for c in report.checks:
+        by_sev.setdefault(c.severity, []).append(c)
+
+    for sev in ("required", "recommended", "optional"):
+        if not by_sev[sev]:
+            continue
+        console.print(f"\n[bold]{sev.title()}[/bold]")
+        for c in by_sev[sev]:
+            console.print(f"  {icon[c.ok]}  {c.name:32s}  {c.detail}")
+
+    s = report.summary
+    console.print(
+        f"\n[bold]Result:[/bold] {s['required_ok']}/{s['required_total']} required · "
+        f"{s['recommended_ok']}/{s['recommended_total']} recommended"
+    )
+    if report.all_required_ok:
+        console.print("[green]Ready to run.[/green]")
+    else:
+        console.print("[red]Not ready — fix required items first.[/red]")
+
+
+@cli.command()
 def init_db():
     """Initialize the SQLite database schema."""
     from job_search.db import init_db as _init
