@@ -82,6 +82,18 @@ def report():
     console.print(stats)
 
 
+@cli.command()
+@click.option("--timeout", type=int, default=None, help="Max seconds to wait for the batch to finish")
+@click.option("--max-jobs", type=int, default=None, help="Cap postings graded this run")
+@click.option("--dry-run", is_flag=True, help="Select + build requests; do not submit to the API")
+def grade(timeout: int | None, max_jobs: int | None, dry_run: bool):
+    """Grade NEW viable postings for fit via the Message Batches API."""
+    from job_search.grading import FitGrader
+    grader = FitGrader()
+    stats = grader.run(timeout_s=timeout, max_jobs=max_jobs, dry_run=dry_run)
+    console.print(stats)
+
+
 @cli.command(name="sync-sheet")
 def sync_sheet():
     """Pull James's status edits from the Sheet into the DB."""

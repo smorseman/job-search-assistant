@@ -69,6 +69,12 @@ CREATE TABLE IF NOT EXISTS jobs (
     stretch_category    TEXT,                    -- qualified|competitive_stretch|long_shot
     benefit_score       REAL DEFAULT 0.0,
     career_trajectory_score REAL DEFAULT 0.0,
+    -- LLM fit grade (augments, does not replace, match_score)
+    llm_grade           TEXT,                    -- Strong|Good|Marginal|Pass
+    llm_fit_score       REAL,                    -- 1-5
+    llm_rationale       TEXT,
+    llm_graded_at       TEXT,                    -- ISO datetime; NULL = not yet graded
+    llm_model           TEXT,
     -- Application state
     app_state           TEXT DEFAULT 'discovered', -- see state machine
     -- Metadata
@@ -126,6 +132,17 @@ CREATE TABLE IF NOT EXISTS daily_reports (
     drive_file_id   TEXT,
     email_message_id TEXT,
     generated_at    TEXT DEFAULT (datetime('now'))
+);
+
+-- ── LLM grading batches (Message Batches API tracking) ───────────────────────
+-- One row per submitted batch. A row left in 'submitted' (timed out before the
+-- report ran) is drained on the next run rather than re-graded — never pay twice.
+CREATE TABLE IF NOT EXISTS grading_batches (
+    batch_id        TEXT PRIMARY KEY,            -- Anthropic message-batch id
+    submitted_at    TEXT DEFAULT (datetime('now')),
+    status          TEXT DEFAULT 'submitted',    -- submitted|drained|error
+    job_count       INTEGER DEFAULT 0,
+    completed_at    TEXT
 );
 
 -- ── Source health log ─────────────────────────────────────────────────────────

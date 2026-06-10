@@ -34,6 +34,9 @@ env/
 
 # Data (local DB — not committed; only schema is tracked)
 *.db
+*.db-wal
+*.db-shm
+*.db-journal
 *.sqlite
 *.sqlite3
 

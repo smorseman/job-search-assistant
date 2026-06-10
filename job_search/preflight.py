@@ -43,7 +43,7 @@ def run_preflight() -> PreflightReport:
     # ── API keys ──────────────────────────────────────────────────────────────
     report.checks.append(_check_key("USAJOBS_API_KEY", "required", "Federal civil-eng postings; free instant approval"))
     report.checks.append(_check_key("USAJOBS_EMAIL", "required", "Required in USAJOBS User-Agent header"))
-    report.checks.append(_check_key("ANTHROPIC_API_KEY", "required", "Resume + cover letter generation"))
+    report.checks.append(_check_key("ANTHROPIC_API_KEY", "required", "Resume/cover-letter generation + fit-grading"))
     report.checks.append(_check_key("ADZUNA_APP_ID", "recommended", "Broad aggregator; free tier"))
     report.checks.append(_check_key("ADZUNA_API_KEY", "recommended", "Broad aggregator; free tier"))
 
@@ -104,6 +104,18 @@ def run_preflight() -> PreflightReport:
         ok=db_ok,
         detail="Run: jsa init-db" if not db_ok else "initialized",
         severity="required",
+    ))
+
+    # ── LLM fit-grading (informational) ───────────────────────────────────────
+    report.checks.append(Check(
+        name="LLM fit-grading",
+        ok=True,
+        detail=(
+            f"enabled (floor={settings.GRADING_FLOOR}, max/run={settings.GRADING_MAX_JOBS}, "
+            f"timeout={settings.GRADING_POLL_TIMEOUT_S}s)"
+            if settings.GRADING_ENABLED else "disabled"
+        ),
+        severity="optional",
     ))
 
     # ── Profile content validation ────────────────────────────────────────────

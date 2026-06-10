@@ -45,7 +45,13 @@ def main():
     due_actions = followup.run()
     logger.info("Follow-up actions due: %d", len(due_actions))
 
-    # 5. Present new high-fit postings (no LLM)
+    # 5. Grade NEW viable postings for fit (cheap LLM tier, Batches API) so the
+    #    report can present grades. Must run before the report reads the DB.
+    if settings.GRADING_ENABLED:
+        from job_search.grading import FitGrader
+        logger.info("Fit grading: %s", FitGrader().run())
+
+    # 6. Present new high-fit postings (resume/cover-letter generation is deferred)
     reporter = DailyReporter()
     logger.info("Daily report: %s", reporter.run())
 

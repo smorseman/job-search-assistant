@@ -50,7 +50,11 @@ class DailyReporter:
                 SELECT * FROM jobs
                 WHERE app_state = 'discovered'
                   AND match_score >= ?
-                ORDER BY match_score DESC
+                ORDER BY
+                  CASE COALESCE(llm_grade, '')
+                    WHEN 'Strong' THEN 3 WHEN 'Good' THEN 2
+                    WHEN 'Marginal' THEN 1 ELSE 0 END DESC,
+                  match_score DESC
                 LIMIT ?
                 """,
                 (PRESENTATION_THRESHOLD, MAX_PRESENTATIONS_PER_RUN),
@@ -96,9 +100,11 @@ class DailyReporter:
     def _format_report_line(self, job_dict: dict) -> str:
         ko_parts = self._format_knockouts(job_dict)
         stretch = job_dict.get("stretch_category", "")
+        grade = job_dict.get("llm_grade") or "—"
         return (
             f"## {job_dict['title']} @ {job_dict['company']}\n"
-            f"- **Score:** {job_dict.get('match_score', 0):.1%}  "
+            f"- **Fit grade:** {grade}  "
+            f"**Score:** {job_dict.get('match_score', 0):.1%}  "
             f"**Stretch:** {stretch}  "
             f"**Benefit:** {job_dict.get('benefit_score', 0):.1%}  "
             f"**Trajectory:** {job_dict.get('career_trajectory_score', 0):.1%}\n"

@@ -29,6 +29,7 @@ SHEET_HEADERS = [
     "location", "salary_range", "remote",
     "jd_link", "resume_link", "cover_letter_link",
     "knockout_flags", "benefit_score", "trajectory_score",
+    "llm_grade", "llm_fit_score", "llm_rationale",
     "notes",
 ]
 
@@ -256,6 +257,9 @@ class SheetsLogger:
             "; ".join(ko_parts),
             round(job_data.get("benefit_score") or 0, 3),
             round(job_data.get("career_trajectory_score") or 0, 3),
+            job_data.get("llm_grade") or "",
+            job_data.get("llm_fit_score") or "",
+            job_data.get("llm_rationale") or "",
             "",
         ]
 
