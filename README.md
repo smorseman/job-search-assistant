@@ -31,13 +31,28 @@ Subsystem A (daily cron)                    Subsystem B (weekly)
 ## Quick start
 
 ```bash
-cp .env.example .env    # fill in API keys
+# 1. Secrets — fill in API keys; never committed
+cp .env.example .env
+
+# 2. Profile — fill in James's real data; never committed
+cp profile/james_profile.example.yaml profile/james_profile.yaml
+
+# 3. Run
 jsa init-db
 jsa ingest --dry-run    # verify sources work
 jsa ingest              # real run
 jsa report              # generate today's report
 jsa stats               # funnel stats
 ```
+
+## Privacy
+
+This repo may be public, but **no real personal data is committed**:
+- `.env` (API keys) — gitignored
+- `profile/james_profile.yaml` (real PII) — gitignored
+- `credentials.json` / `token.json` (Google OAuth) — gitignored
+
+The committed `*.example.yaml` files are templates with placeholders only.
 
 ## Build sequence (§18)
 

@@ -61,7 +61,14 @@ class DocumentGenerator:
         self._profile: dict | None = None
 
     def load_profile(self, path: str | None = None) -> None:
+        from pathlib import Path
         profile_path = path or settings.PROFILE_PATH
+        if not Path(profile_path).exists():
+            raise FileNotFoundError(
+                f"Profile not found at {profile_path}. "
+                f"Copy the template:  cp {settings.PROFILE_TEMPLATE_PATH} {profile_path}  "
+                f"and fill in James's real data before running."
+            )
         with open(profile_path) as f:
             self._profile = yaml.safe_load(f)
         logger.info("Profile loaded from %s", profile_path)

@@ -37,8 +37,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     DRY_RUN: bool = False
 
-    # Profile
+    # Profile — real file is gitignored; copy from .example template
     PROFILE_PATH: str = "profile/james_profile.yaml"
+    PROFILE_TEMPLATE_PATH: str = "profile/james_profile.example.yaml"
 
     @field_validator("DB_PATH", mode="before")
     @classmethod

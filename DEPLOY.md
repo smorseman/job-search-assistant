@@ -58,8 +58,13 @@ python scripts/run_discovery.py
 
 ## 5. Fill in James's profile
 
-Edit `profile/james_profile.yaml` completely before the first run.
-Every `# FILL IN` comment must be resolved.
+```bash
+cp profile/james_profile.example.yaml profile/james_profile.yaml
+nano profile/james_profile.yaml
+```
+
+Resolve every `# FILL IN` comment before the first run.
+The real `profile/james_profile.yaml` is gitignored — never commit it.
 
 ## 6. Cron jobs
 

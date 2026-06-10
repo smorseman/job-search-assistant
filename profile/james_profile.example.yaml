@@ -1,5 +1,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# MASTER PROFILE — James
+# MASTER PROFILE TEMPLATE — James
+#
+# THIS FILE IS A TEMPLATE. Do not edit in place — copy it first:
+#   cp profile/james_profile.example.yaml profile/james_profile.yaml
+# Then edit the copy. The real file is gitignored to keep PII out of the repo.
+#
 # This file is the single source of truth for all resume and cover-letter
 # generation. Every claim in any generated document MUST trace to a field here.
 # Fill in ALL sections before running the pipeline for the first time.

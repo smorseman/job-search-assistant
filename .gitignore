@@ -6,6 +6,11 @@ credentials.json
 token.json
 token_*.json
 
+# Real profile data — PII; only the .example template is committed
+profile/james_profile.yaml
+profile/*_profile.yaml
+!profile/*_profile.example.yaml
+
 # Python
 __pycache__/
 *.py[cod]
