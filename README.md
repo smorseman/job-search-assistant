@@ -54,6 +54,18 @@ This repo may be public, but **no real personal data is committed**:
 
 The committed `*.example.yaml` files are templates with placeholders only.
 
+## Location scoring
+
+Every job posting's metro is evaluated against a 50-metro framework
+(5 dimensions × 5 weighting schemes — see [docs/location_scoring.md](docs/location_scoring.md)).
+Active scheme is set in `config/scoring.yaml`; underlying city data in
+`config/cities.yaml`. Inspect a single location interactively:
+
+```bash
+jsa score-location "Arlington" --state VA
+jsa score-location "Cleveland" --state OH --scheme career_only
+```
+
 ## Build sequence (§18)
 
 - [x] 1. Master profile schema (`profile/james_profile.yaml`)

@@ -11,6 +11,10 @@ profile/james_profile.yaml
 profile/*_profile.yaml
 !profile/*_profile.example.yaml
 
+# Source research docs that may contain personal candidate context
+docs/city_guide.pdf
+docs/*_personal.*
+
 # Python
 __pycache__/
 *.py[cod]

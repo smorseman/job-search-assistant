@@ -1,0 +1,1171 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Civil Engineering City Guide — Top 50 U.S. Metros
+# Source: docs/city_guide.pdf (Entry-Level Market Analysis, May 2026)
+#
+# Five dimensions, each scored 0.0–5.0:
+#   ce        — CE Job Market (2/3 entry-volume + 1/3 density per 100K)
+#   col       — COL-Adjusted Salary (real net ÷ RPP, normalized to best)
+#   home      — Home Affordability (years to 20% down on starter; sliding roommate)
+#   mj        — Cannabis Legal Status (Rec=5, MedEasy=4.5, MedMod=3.5,
+#               Decrim=2.33, MedRestrict=2.0, Banned=1.0)
+#   dating    — Dating Market (quadratic-penalized: 2/3 gender ratio + 1/3 pool)
+#
+# Composite formula: weighted_sum / (sum_weights × 5) × 100  →  0–100 scale
+# Default scheme is "balanced"; override in config/scoring.yaml.
+# ─────────────────────────────────────────────────────────────────────────────
+
+schemes:
+  fit_first:     {ce: 1,   col: 1, home: 1, mj: 3,   dating: 3}
+  balanced:      {ce: 1,   col: 1, home: 1, mj: 1,   dating: 1}
+  career_relax:  {ce: 3,   col: 2, home: 2, mj: 0.5, dating: 1}
+  career_first:  {ce: 3,   col: 2, home: 2, mj: 1,   dating: 1}
+  career_only:   {ce: 3,   col: 2, home: 1, mj: 0,   dating: 0}
+
+# Fallback score (0–100) for postings in metros not in the top 50
+fallback_composite: 40.0
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 50 metros — ordered by Balanced rank for readability (rank stored explicitly)
+# ─────────────────────────────────────────────────────────────────────────────
+cities:
+
+  # ── Ohio cluster — dominant ──────────────────────────────────────────────
+  - id: cleveland_oh
+    name: "Cleveland, OH"
+    state: OH
+    balanced_rank: 1
+    aliases: [cleveland, "cleveland metro", "cleveland heights, oh", "lakewood, oh", "parma, oh"]
+    population_m: 2.00
+    salary_k: 68
+    real_net_k: 55
+    rpp: 93.5
+    rent_1br: 1000
+    solo_savings: 8988
+    starter_home_k: 150
+    years_20pct_solo: 3.3
+    entry_jobs: 165
+    total_jobs: 230
+    ce_raw: 59.2
+    cannabis_status: Recreational
+    wm_index: 128
+    pct_pop_25_34: 14.2
+    scores: {ce: 1.2, col: 4.5, home: 4.5, mj: 5.0, dating: 3.9}
+
+  - id: columbus_oh
+    name: "Columbus, OH"
+    state: OH
+    balanced_rank: 2
+    aliases: [columbus, "dublin, oh", "westerville, oh", "hilliard, oh"]
+    population_m: 1.75
+    salary_k: 71
+    real_net_k: 57
+    rpp: 94.5
+    rent_1br: 1100
+    solo_savings: 9643
+    starter_home_k: 175
+    years_20pct_solo: 3.6
+    entry_jobs: 200
+    total_jobs: 250
+    ce_raw: 91.4
+    cannabis_status: Recreational
+    wm_index: 136
+    pct_pop_25_34: 15.1
+    scores: {ce: 1.6, col: 4.6, home: 4.2, mj: 5.0, dating: 3.7}
+
+  - id: cincinnati_oh
+    name: "Cincinnati, OH"
+    state: OH
+    balanced_rank: 3
+    aliases: [cincinnati, "cincy", "covington, ky", "florence, ky"]
+    population_m: 2.29
+    salary_k: 70
+    real_net_k: 57
+    rpp: 94.0
+    rent_1br: 1050
+    solo_savings: 9645
+    starter_home_k: 175
+    years_20pct_solo: 3.6
+    entry_jobs: 180
+    total_jobs: 240
+    ce_raw: 59.0
+    cannabis_status: Recreational
+    wm_index: 130
+    pct_pop_25_34: 15.0
+    scores: {ce: 1.2, col: 4.5, home: 4.2, mj: 5.0, dating: 3.9}
+
+  - id: detroit_mi
+    name: "Detroit, MI"
+    state: MI
+    balanced_rank: 4
+    aliases: [detroit, "dearborn, mi", "warren, mi", "troy, mi", "ann arbor, mi"]
+    population_m: 4.40
+    salary_k: 70
+    real_net_k: 55
+    rpp: 95.2
+    rent_1br: 1050
+    solo_savings: 9102
+    starter_home_k: 160
+    years_20pct_solo: 3.5
+    entry_jobs: 190
+    total_jobs: 270
+    ce_raw: 30.4
+    cannabis_status: Recreational
+    wm_index: 133
+    pct_pop_25_34: 14.5
+    scores: {ce: 1.0, col: 4.5, home: 4.3, mj: 5.0, dating: 3.7}
+
+  - id: kansas_city_mo
+    name: "Kansas City, MO"
+    state: MO
+    balanced_rank: 5
+    aliases: [kansas city, "overland park, ks", "kansas city, ks", "olathe, ks", "lee's summit, mo"]
+    population_m: 2.23
+    salary_k: 70
+    real_net_k: 54
+    rpp: 97.0
+    rent_1br: 1200
+    solo_savings: 6272
+    starter_home_k: 185
+    years_20pct_solo: 5.9
+    entry_jobs: 315
+    total_jobs: 420
+    ce_raw: 105.9
+    cannabis_status: Recreational
+    wm_index: 129
+    pct_pop_25_34: 14.8
+    scores: {ce: 2.2, col: 4.3, home: 2.6, mj: 5.0, dating: 4.0}
+
+  # ── Mid-Atlantic ──────────────────────────────────────────────────────────
+  - id: dc_nova
+    name: "Washington DC / NoVA"
+    state: DC
+    balanced_rank: 6
+    aliases:
+      - washington
+      - "washington, dc"
+      - "washington dc"
+      - dc
+      - nova
+      - "arlington, va"
+      - "alexandria, va"
+      - "fairfax, va"
+      - "reston, va"
+      - "tysons, va"
+      - "vienna, va"
+      - "mclean, va"
+      - "herndon, va"
+      - "bethesda, md"
+      - "rockville, md"
+      - "silver spring, md"
+      - "gaithersburg, md"
+      - "national landing, va"
+    population_m: 5.60
+    salary_k: 76
+    real_net_k: 51
+    rpp: 108.6
+    rent_1br: 2000
+    solo_savings: 995
+    starter_home_k: 390
+    years_20pct_solo: 78.4
+    entry_jobs: 998
+    total_jobs: 1300
+    ce_raw: 136.8
+    cannabis_status: Recreational
+    wm_index: 135
+    pct_pop_25_34: 15.3
+    scores: {ce: 4.8, col: 4.1, home: 0.2, mj: 5.0, dating: 3.7}
+
+  - id: baltimore_md
+    name: "Baltimore, MD"
+    state: MD
+    balanced_rank: 7
+    aliases: [baltimore, "towson, md", "columbia, md", "ellicott city, md"]
+    population_m: 2.84
+    salary_k: 75
+    real_net_k: 52
+    rpp: 105.0
+    rent_1br: 1500
+    solo_savings: 5169
+    starter_home_k: 240
+    years_20pct_solo: 9.3
+    entry_jobs: 416
+    total_jobs: 530
+    ce_raw: 115.0
+    cannabis_status: Recreational
+    wm_index: 124
+    pct_pop_25_34: 14.8
+    scores: {ce: 2.6, col: 4.2, home: 1.6, mj: 5.0, dating: 4.2}
+
+  # ── Florida ───────────────────────────────────────────────────────────────
+  - id: tampa_fl
+    name: "Tampa, FL"
+    state: FL
+    balanced_rank: 8
+    aliases: [tampa, "st petersburg, fl", "st. petersburg, fl", "clearwater, fl", "brandon, fl", "tampa bay"]
+    population_m: 3.04
+    salary_k: 70
+    real_net_k: 54
+    rpp: 103.4
+    rent_1br: 1650
+    solo_savings: 4562
+    starter_home_k: 220
+    years_20pct_solo: 9.6
+    entry_jobs: 515
+    total_jobs: 600
+    ce_raw: 145.4
+    cannabis_status: Medical-Easy
+    wm_index: 128
+    pct_pop_25_34: 14.2
+    scores: {ce: 3.1, col: 4.3, home: 1.6, mj: 4.5, dating: 3.9}
+
+  # ── California ────────────────────────────────────────────────────────────
+  - id: ie_riverside_ca
+    name: "Inland Empire / Riverside, CA"
+    state: CA
+    balanced_rank: 9
+    aliases:
+      - riverside
+      - "riverside, ca"
+      - "san bernardino, ca"
+      - "ontario, ca"
+      - "rancho cucamonga, ca"
+      - "fontana, ca"
+      - "moreno valley, ca"
+      - "corona, ca"
+      - "inland empire"
+      - "ie"
+    population_m: 2.66
+    salary_k: 85
+    real_net_k: 55
+    rpp: 107.9
+    rent_1br: 1800
+    solo_savings: 6188
+    starter_home_k: 380
+    years_20pct_solo: 12.3
+    entry_jobs: 550
+    total_jobs: 737
+    ce_raw: 154.3
+    cannabis_status: Recreational
+    wm_index: 143
+    pct_pop_25_34: 13.8
+    scores: {ce: 3.5, col: 4.4, home: 1.2, mj: 5.0, dating: 3.2}
+
+  - id: chicago_il
+    name: "Chicago, IL"
+    state: IL
+    balanced_rank: 10
+    aliases: [chicago, "naperville, il", "evanston, il", "schaumburg, il", "oak park, il"]
+    population_m: 9.41
+    salary_k: 76
+    real_net_k: 53
+    rpp: 105.8
+    rent_1br: 1650
+    solo_savings: 4912
+    starter_home_k: 220
+    years_20pct_solo: 9.0
+    entry_jobs: 570
+    total_jobs: 750
+    ce_raw: 46.0
+    cannabis_status: Recreational
+    wm_index: 131
+    pct_pop_25_34: 15.2
+    scores: {ce: 2.4, col: 4.3, home: 1.7, mj: 5.0, dating: 3.9}
+
+  - id: houston_tx
+    name: "Houston, TX"
+    state: TX
+    balanced_rank: 11
+    aliases: [houston, "sugar land, tx", "the woodlands, tx", "katy, tx", "pearland, tx"]
+    population_m: 6.89
+    salary_k: 75
+    real_net_k: 59
+    rpp: 100.2
+    rent_1br: 1345
+    solo_savings: 11569
+    starter_home_k: 175
+    years_20pct_solo: 3.0
+    entry_jobs: 509
+    total_jobs: 575
+    ce_raw: 65.4
+    cannabis_status: Banned
+    wm_index: 129
+    pct_pop_25_34: 15.3
+    scores: {ce: 2.3, col: 4.7, home: 5.0, mj: 1.0, dating: 4.0}
+
+  - id: st_louis_mo
+    name: "St. Louis, MO"
+    state: MO
+    balanced_rank: 12
+    aliases: [st louis, "st. louis", saint louis, "chesterfield, mo", "clayton, mo"]
+    population_m: 2.81
+    salary_k: 68
+    real_net_k: 53
+    rpp: 96.0
+    rent_1br: 1100
+    solo_savings: 6259
+    starter_home_k: 175
+    years_20pct_solo: 5.6
+    entry_jobs: 185
+    total_jobs: 260
+    ce_raw: 46.8
+    cannabis_status: Recreational
+    wm_index: 128
+    pct_pop_25_34: 14.5
+    scores: {ce: 1.1, col: 4.2, home: 2.7, mj: 5.0, dating: 4.0}
+
+  - id: seattle_wa
+    name: "Seattle, WA"
+    state: WA
+    balanced_rank: 13
+    aliases: [seattle, "bellevue, wa", "redmond, wa", "kirkland, wa", "tacoma, wa", "everett, wa"]
+    population_m: 3.58
+    salary_k: 85
+    real_net_k: 59
+    rpp: 113.0
+    rent_1br: 1900
+    solo_savings: 12361
+    starter_home_k: 475
+    years_20pct_solo: 7.7
+    entry_jobs: 401
+    total_jobs: 550
+    ce_raw: 81.7
+    cannabis_status: Recreational
+    wm_index: 154
+    pct_pop_25_34: 16.2
+    scores: {ce: 2.2, col: 4.7, home: 2.0, mj: 5.0, dating: 3.1}
+
+  - id: jacksonville_fl
+    name: "Jacksonville, FL"
+    state: FL
+    balanced_rank: 14
+    aliases: [jacksonville, "jax", "jacksonville beach, fl"]
+    population_m: 1.62
+    salary_k: 68
+    real_net_k: 55
+    rpp: 98.5
+    rent_1br: 1400
+    solo_savings: 6224
+    starter_home_k: 215
+    years_20pct_solo: 6.9
+    entry_jobs: 200
+    total_jobs: 270
+    ce_raw: 91.4
+    cannabis_status: Medical-Easy
+    wm_index: 129
+    pct_pop_25_34: 14.8
+    scores: {ce: 1.7, col: 4.4, home: 2.2, mj: 4.5, dating: 4.0}
+
+  - id: minneapolis_mn
+    name: "Minneapolis, MN"
+    state: MN
+    balanced_rank: 15
+    aliases: [minneapolis, "st paul, mn", "st. paul, mn", "minneapolis-st paul", twin cities, "bloomington, mn"]
+    population_m: 3.76
+    salary_k: 76
+    real_net_k: 54
+    rpp: 104.2
+    rent_1br: 1400
+    solo_savings: 7201
+    starter_home_k: 250
+    years_20pct_solo: 6.9
+    entry_jobs: 243
+    total_jobs: 336
+    ce_raw: 46.7
+    cannabis_status: Recreational
+    wm_index: 132
+    pct_pop_25_34: 15.4
+    scores: {ce: 1.3, col: 4.3, home: 2.2, mj: 5.0, dating: 3.9}
+
+  - id: pittsburgh_pa
+    name: "Pittsburgh, PA"
+    state: PA
+    balanced_rank: 16
+    aliases: [pittsburgh, "monroeville, pa", "cranberry, pa"]
+    population_m: 2.37
+    salary_k: 68
+    real_net_k: 53
+    rpp: 97.8
+    rent_1br: 1100
+    solo_savings: 7568
+    starter_home_k: 170
+    years_20pct_solo: 4.5
+    entry_jobs: 200
+    total_jobs: 290
+    ce_raw: 58.2
+    cannabis_status: Medical-Moderate
+    wm_index: 127
+    pct_pop_25_34: 14.8
+    scores: {ce: 1.3, col: 4.3, home: 3.4, mj: 3.5, dating: 4.1}
+
+  - id: boston_ma
+    name: "Boston, MA"
+    state: MA
+    balanced_rank: 17
+    aliases: [boston, "cambridge, ma", "somerville, ma", "newton, ma", "waltham, ma"]
+    population_m: 4.40
+    salary_k: 80
+    real_net_k: 53
+    rpp: 111.6
+    rent_1br: 2800
+    solo_savings: -3139
+    starter_home_k: 440
+    years_20pct_solo: null
+    entry_jobs: 467
+    total_jobs: 650
+    ce_raw: 76.3
+    cannabis_status: Recreational
+    wm_index: 120
+    pct_pop_25_34: 17.0
+    scores: {ce: 2.4, col: 4.2, home: 0.0, mj: 5.0, dating: 4.9}
+
+  - id: richmond_va
+    name: "Richmond, VA"
+    state: VA
+    balanced_rank: 18
+    aliases: [richmond, "rva", "henrico, va", "chesterfield, va"]
+    population_m: 1.34
+    salary_k: 70
+    real_net_k: 52
+    rpp: 99.0
+    rent_1br: 1300
+    solo_savings: 4830
+    starter_home_k: 220
+    years_20pct_solo: 9.1
+    entry_jobs: 165
+    total_jobs: 230
+    ce_raw: 88.3
+    cannabis_status: Recreational
+    wm_index: 127
+    pct_pop_25_34: 15.0
+    scores: {ce: 1.5, col: 4.2, home: 1.7, mj: 5.0, dating: 4.1}
+
+  - id: buffalo_ny
+    name: "Buffalo, NY"
+    state: NY
+    balanced_rank: 19
+    aliases: [buffalo, "amherst, ny", "cheektowaga, ny"]
+    population_m: 1.16
+    salary_k: 65
+    real_net_k: 51
+    rpp: 95.0
+    rent_1br: 1050
+    solo_savings: 4332
+    starter_home_k: 160
+    years_20pct_solo: 7.4
+    entry_jobs: 130
+    total_jobs: 185
+    ce_raw: 78.8
+    cannabis_status: Recreational
+    wm_index: 127
+    pct_pop_25_34: 14.5
+    scores: {ce: 1.3, col: 4.1, home: 2.0, mj: 5.0, dating: 4.0}
+
+  - id: las_vegas_nv
+    name: "Las Vegas, NV"
+    state: NV
+    balanced_rank: 20
+    aliases: [las vegas, vegas, "henderson, nv", "north las vegas, nv", "paradise, nv"]
+    population_m: 3.00
+    salary_k: 72
+    real_net_k: 59
+    rpp: 97.4
+    rent_1br: 1350
+    solo_savings: 9715
+    starter_home_k: 295
+    years_20pct_solo: 6.1
+    entry_jobs: 113
+    total_jobs: 160
+    ce_raw: 26.6
+    cannabis_status: Recreational
+    wm_index: 139
+    pct_pop_25_34: 14.8
+    scores: {ce: 0.7, col: 4.7, home: 2.5, mj: 5.0, dating: 3.5}
+
+  - id: denver_co
+    name: "Denver, CO"
+    state: CO
+    balanced_rank: 21
+    aliases: [denver, "aurora, co", "lakewood, co", "thornton, co", "centennial, co", "boulder, co"]
+    population_m: 3.00
+    salary_k: 80
+    real_net_k: 56
+    rpp: 105.5
+    rent_1br: 1800
+    solo_savings: 6461
+    starter_home_k: 380
+    years_20pct_solo: 11.8
+    entry_jobs: 300
+    total_jobs: 400
+    ce_raw: 75.1
+    cannabis_status: Recreational
+    wm_index: 137
+    pct_pop_25_34: 15.8
+    scores: {ce: 1.8, col: 4.5, home: 1.3, mj: 5.0, dating: 3.7}
+
+  - id: oklahoma_city_ok
+    name: "Oklahoma City, OK"
+    state: OK
+    balanced_rank: 22
+    aliases: [oklahoma city, "okc", "edmond, ok", "norman, ok"]
+    population_m: 1.49
+    salary_k: 65
+    real_net_k: 53
+    rpp: 93.5
+    rent_1br: 1050
+    solo_savings: 5710
+    starter_home_k: 175
+    years_20pct_solo: 6.1
+    entry_jobs: 130
+    total_jobs: 180
+    ce_raw: 63.0
+    cannabis_status: Medical-Easy
+    wm_index: 129
+    pct_pop_25_34: 15.0
+    scores: {ce: 1.1, col: 4.2, home: 2.5, mj: 4.5, dating: 4.0}
+
+  - id: sacramento_ca
+    name: "Sacramento, CA"
+    state: CA
+    balanced_rank: 23
+    aliases: [sacramento, "roseville, ca", "elk grove, ca", "folsom, ca"]
+    population_m: 2.27
+    salary_k: 80
+    real_net_k: 51
+    rpp: 108.9
+    rent_1br: 1600
+    solo_savings: 4929
+    starter_home_k: 320
+    years_20pct_solo: 13.0
+    entry_jobs: 350
+    total_jobs: 400
+    ce_raw: 134.9
+    cannabis_status: Recreational
+    wm_index: 135
+    pct_pop_25_34: 13.5
+    scores: {ce: 2.4, col: 4.1, home: 1.2, mj: 5.0, dating: 3.5}
+
+  - id: rochester_ny
+    name: "Rochester, NY"
+    state: NY
+    balanced_rank: 24
+    aliases: [rochester, "greece, ny", "henrietta, ny"]
+    population_m: 1.10
+    salary_k: 65
+    real_net_k: 50
+    rpp: 96.5
+    rent_1br: 1050
+    solo_savings: 4090
+    starter_home_k: 155
+    years_20pct_solo: 7.6
+    entry_jobs: 110
+    total_jobs: 160
+    ce_raw: 68.8
+    cannabis_status: Recreational
+    wm_index: 127
+    pct_pop_25_34: 14.2
+    scores: {ce: 1.2, col: 4.0, home: 2.0, mj: 5.0, dating: 4.0}
+
+  - id: tucson_az
+    name: "Tucson, AZ"
+    state: AZ
+    balanced_rank: 25
+    aliases: [tucson, "oro valley, az", "marana, az"]
+    population_m: 1.07
+    salary_k: 65
+    real_net_k: 52
+    rpp: 98.0
+    rent_1br: 1100
+    solo_savings: 5891
+    starter_home_k: 220
+    years_20pct_solo: 7.5
+    entry_jobs: 95
+    total_jobs: 135
+    ce_raw: 62.5
+    cannabis_status: Recreational
+    wm_index: 132
+    pct_pop_25_34: 15.5
+    scores: {ce: 1.0, col: 4.1, home: 2.0, mj: 5.0, dating: 3.9}
+
+  - id: virginia_beach_va
+    name: "Virginia Beach, VA"
+    state: VA
+    balanced_rank: 26
+    aliases: [virginia beach, "norfolk, va", "chesapeake, va", "newport news, va", "hampton, va", hampton roads]
+    population_m: 1.82
+    salary_k: 70
+    real_net_k: 52
+    rpp: 99.5
+    rent_1br: 1350
+    solo_savings: 4224
+    starter_home_k: 260
+    years_20pct_solo: 12.3
+    entry_jobs: 180
+    total_jobs: 250
+    ce_raw: 71.2
+    cannabis_status: Recreational
+    wm_index: 127
+    pct_pop_25_34: 15.5
+    scores: {ce: 1.4, col: 4.2, home: 1.2, mj: 5.0, dating: 4.2}
+
+  - id: nyc_ny
+    name: "New York City, NY"
+    state: NY
+    balanced_rank: 27
+    aliases:
+      - nyc
+      - new york
+      - "new york, ny"
+      - manhattan
+      - "manhattan, ny"
+      - brooklyn
+      - "brooklyn, ny"
+      - queens
+      - "queens, ny"
+      - bronx
+      - "bronx, ny"
+      - "staten island, ny"
+      - "long island, ny"
+      - "jersey city, nj"
+      - "newark, nj"
+      - "hoboken, nj"
+      - "white plains, ny"
+    population_m: 19.15
+    salary_k: 90
+    real_net_k: 57
+    rpp: 112.5
+    rent_1br: 3200
+    solo_savings: -1336
+    starter_home_k: 420
+    years_20pct_solo: null
+    entry_jobs: 400
+    total_jobs: 1200
+    ce_raw: 7.0
+    cannabis_status: Recreational
+    wm_index: 118
+    pct_pop_25_34: 15.8
+    scores: {ce: 1.5, col: 4.6, home: 0.0, mj: 5.0, dating: 4.8}
+
+  - id: philadelphia_pa
+    name: "Philadelphia, PA"
+    state: PA
+    balanced_rank: 28
+    aliases: [philadelphia, philly, "wilmington, de", "king of prussia, pa"]
+    population_m: 5.86
+    salary_k: 72
+    real_net_k: 53
+    rpp: 103.5
+    rent_1br: 1600
+    solo_savings: 4265
+    starter_home_k: 210
+    years_20pct_solo: 9.8
+    entry_jobs: 475
+    total_jobs: 650
+    ce_raw: 59.2
+    cannabis_status: Medical-Moderate
+    wm_index: 122
+    pct_pop_25_34: 14.1
+    scores: {ce: 2.2, col: 4.3, home: 1.5, mj: 3.5, dating: 4.2}
+
+  - id: orlando_fl
+    name: "Orlando, FL"
+    state: FL
+    balanced_rank: 29
+    aliases: [orlando, "kissimmee, fl", "winter park, fl"]
+    population_m: 2.77
+    salary_k: 68
+    real_net_k: 54
+    rpp: 100.8
+    rent_1br: 1650
+    solo_savings: 3313
+    starter_home_k: 250
+    years_20pct_solo: 15.1
+    entry_jobs: 310
+    total_jobs: 420
+    ce_raw: 82.6
+    cannabis_status: Medical-Easy
+    wm_index: 130
+    pct_pop_25_34: 15.2
+    scores: {ce: 1.9, col: 4.3, home: 1.0, mj: 4.5, dating: 4.0}
+
+  - id: atlanta_ga
+    name: "Atlanta, GA"
+    state: GA
+    balanced_rank: 30
+    aliases: [atlanta, "marietta, ga", "alpharetta, ga", "sandy springs, ga", "decatur, ga", "smyrna, ga"]
+    population_m: 6.30
+    salary_k: 72
+    real_net_k: 55
+    rpp: 97.0
+    rent_1br: 1350
+    solo_savings: 6022
+    starter_home_k: 230
+    years_20pct_solo: 7.6
+    entry_jobs: 545
+    total_jobs: 680
+    ce_raw: 69.3
+    cannabis_status: Decriminalized
+    wm_index: 122
+    pct_pop_25_34: 15.5
+    scores: {ce: 2.5, col: 4.4, home: 2.0, mj: 2.3, dating: 4.5}
+
+  - id: hartford_ct
+    name: "Hartford, CT"
+    state: CT
+    balanced_rank: 31
+    aliases: [hartford, "west hartford, ct", "new haven, ct"]
+    population_m: 1.21
+    salary_k: 72
+    real_net_k: 49
+    rpp: 106.5
+    rent_1br: 1350
+    solo_savings: 3672
+    starter_home_k: 210
+    years_20pct_solo: 11.4
+    entry_jobs: 130
+    total_jobs: 190
+    ce_raw: 73.5
+    cannabis_status: Recreational
+    wm_index: 128
+    pct_pop_25_34: 14.0
+    scores: {ce: 1.3, col: 3.9, home: 1.3, mj: 5.0, dating: 3.9}
+
+  - id: phoenix_tempe_az
+    name: "Phoenix / Tempe, AZ"
+    state: AZ
+    balanced_rank: 32
+    aliases: [phoenix, "phx", "tempe, az", "mesa, az", "scottsdale, az", "chandler, az", "gilbert, az", "glendale, az"]
+    population_m: 4.83
+    salary_k: 72
+    real_net_k: 52
+    rpp: 105.5
+    rent_1br: 1350
+    solo_savings: 7016
+    starter_home_k: 270
+    years_20pct_solo: 7.7
+    entry_jobs: 250
+    total_jobs: 350
+    ce_raw: 37.0
+    cannabis_status: Recreational
+    wm_index: 152
+    pct_pop_25_34: 14.5
+    scores: {ce: 1.3, col: 4.2, home: 2.0, mj: 5.0, dating: 2.9}
+
+  - id: dallas_fw_tx
+    name: "Dallas / Fort Worth, TX"
+    state: TX
+    balanced_rank: 33
+    aliases:
+      - dallas
+      - "dallas, tx"
+      - "fort worth, tx"
+      - "ft worth, tx"
+      - dfw
+      - "plano, tx"
+      - "irving, tx"
+      - "frisco, tx"
+      - "arlington, tx"
+      - "garland, tx"
+      - "richardson, tx"
+      - "mckinney, tx"
+    population_m: 6.73
+    salary_k: 72
+    real_net_k: 55
+    rpp: 103.3
+    rent_1br: 1350
+    solo_savings: 9060
+    starter_home_k: 210
+    years_20pct_solo: 4.6
+    entry_jobs: 487
+    total_jobs: 566
+    ce_raw: 62.3
+    cannabis_status: Banned
+    wm_index: 131
+    pct_pop_25_34: 16.1
+    scores: {ce: 2.2, col: 4.4, home: 3.3, mj: 1.0, dating: 4.1}
+
+  - id: providence_ri
+    name: "Providence, RI"
+    state: RI
+    balanced_rank: 34
+    aliases: [providence, "warwick, ri", "cranston, ri"]
+    population_m: 1.65
+    salary_k: 70
+    real_net_k: 49
+    rpp: 105.5
+    rent_1br: 1450
+    solo_savings: 2224
+    starter_home_k: 265
+    years_20pct_solo: 23.8
+    entry_jobs: 135
+    total_jobs: 195
+    ce_raw: 56.6
+    cannabis_status: Recreational
+    wm_index: 126
+    pct_pop_25_34: 14.8
+    scores: {ce: 1.1, col: 3.9, home: 0.6, mj: 5.0, dating: 4.1}
+
+  - id: los_angeles_ca
+    name: "Los Angeles, CA"
+    state: CA
+    balanced_rank: 35
+    aliases:
+      - los angeles
+      - la
+      - "long beach, ca"
+      - "pasadena, ca"
+      - "santa monica, ca"
+      - "burbank, ca"
+      - "glendale, ca"
+      - "torrance, ca"
+      - "anaheim, ca"
+      - "irvine, ca"
+      - "santa ana, ca"
+      - "huntington beach, ca"
+      - "orange county, ca"
+    population_m: 12.68
+    salary_k: 80
+    real_net_k: 49
+    rpp: 113.5
+    rent_1br: 1900
+    solo_savings: 2035
+    starter_home_k: 510
+    years_20pct_solo: 50.1
+    entry_jobs: 488
+    total_jobs: 511
+    ce_raw: 36.8
+    cannabis_status: Recreational
+    wm_index: 136
+    pct_pop_25_34: 14.8
+    scores: {ce: 1.9, col: 4.0, home: 0.3, mj: 5.0, dating: 3.6}
+
+  - id: charlotte_nc
+    name: "Charlotte, NC"
+    state: NC
+    balanced_rank: 36
+    aliases: [charlotte, "concord, nc", "gastonia, nc", "rock hill, sc"]
+    population_m: 2.79
+    salary_k: 70
+    real_net_k: 53
+    rpp: 99.5
+    rent_1br: 1450
+    solo_savings: 3833
+    starter_home_k: 240
+    years_20pct_solo: 12.5
+    entry_jobs: 414
+    total_jobs: 530
+    ce_raw: 115.9
+    cannabis_status: Decriminalized
+    wm_index: 131
+    pct_pop_25_34: 15.8
+    scores: {ce: 2.6, col: 4.2, home: 1.2, mj: 2.3, dating: 4.0}
+
+  - id: sf_bay_ca
+    name: "SF Bay Area, CA"
+    state: CA
+    balanced_rank: 37
+    aliases:
+      - san francisco
+      - "san francisco, ca"
+      - sf
+      - "oakland, ca"
+      - "berkeley, ca"
+      - "san jose, ca"
+      - "palo alto, ca"
+      - "mountain view, ca"
+      - "sunnyvale, ca"
+      - "santa clara, ca"
+      - "san mateo, ca"
+      - "redwood city, ca"
+      - "fremont, ca"
+      - "hayward, ca"
+      - "walnut creek, ca"
+      - bay area
+      - silicon valley
+    population_m: 3.36
+    salary_k: 112
+    real_net_k: 62
+    rpp: 118.2
+    rent_1br: 3400
+    solo_savings: 8036
+    starter_home_k: 620
+    years_20pct_solo: 15.4
+    entry_jobs: 37
+    total_jobs: 500
+    ce_raw: 0.8
+    cannabis_status: Recreational
+    wm_index: 149
+    pct_pop_25_34: 15.5
+    scores: {ce: 0.2, col: 5.0, home: 1.0, mj: 5.0, dating: 3.2}
+
+  - id: portland_or
+    name: "Portland, OR"
+    state: OR
+    balanced_rank: 38
+    aliases: [portland, "beaverton, or", "hillsboro, or", "gresham, or"]
+    population_m: 2.51
+    salary_k: 76
+    real_net_k: 48
+    rpp: 108.5
+    rent_1br: 1550
+    solo_savings: 1889
+    starter_home_k: 330
+    years_20pct_solo: 34.9
+    entry_jobs: 210
+    total_jobs: 290
+    ce_raw: 60.6
+    cannabis_status: Recreational
+    wm_index: 138
+    pct_pop_25_34: 15.5
+    scores: {ce: 1.4, col: 3.9, home: 0.4, mj: 5.0, dating: 3.6}
+
+  - id: new_orleans_la
+    name: "New Orleans, LA"
+    state: LA
+    balanced_rank: 39
+    aliases: [new orleans, nola, "metairie, la", "kenner, la"]
+    population_m: 1.27
+    salary_k: 65
+    real_net_k: 54
+    rpp: 97.5
+    rent_1br: 1250
+    solo_savings: 5904
+    starter_home_k: 195
+    years_20pct_solo: 6.6
+    entry_jobs: 120
+    total_jobs: 175
+    ce_raw: 64.8
+    cannabis_status: Decriminalized
+    wm_index: 126
+    pct_pop_25_34: 15.2
+    scores: {ce: 1.2, col: 4.3, home: 2.3, mj: 2.3, dating: 4.2}
+
+  - id: san_diego_ca
+    name: "San Diego, CA"
+    state: CA
+    balanced_rank: 40
+    aliases: [san diego, "la jolla, ca", "chula vista, ca", "carlsbad, ca", "escondido, ca"]
+    population_m: 3.28
+    salary_k: 82
+    real_net_k: 50
+    rpp: 115.2
+    rent_1br: 2200
+    solo_savings: 749
+    starter_home_k: 480
+    years_20pct_solo: 128.2
+    entry_jobs: 280
+    total_jobs: 370
+    ce_raw: 64.6
+    cannabis_status: Recreational
+    wm_index: 140
+    pct_pop_25_34: 15.0
+    scores: {ce: 1.6, col: 4.0, home: 0.1, mj: 5.0, dating: 3.5}
+
+  - id: san_antonio_tx
+    name: "San Antonio, TX"
+    state: TX
+    balanced_rank: 41
+    aliases: [san antonio]
+    population_m: 2.72
+    salary_k: 68
+    real_net_k: 56
+    rpp: 97.5
+    rent_1br: 1200
+    solo_savings: 8577
+    starter_home_k: 185
+    years_20pct_solo: 4.3
+    entry_jobs: 169
+    total_jobs: 240
+    ce_raw: 43.8
+    cannabis_status: Banned
+    wm_index: 130
+    pct_pop_25_34: 16.0
+    scores: {ce: 1.1, col: 4.5, home: 3.5, mj: 1.0, dating: 4.1}
+
+  - id: louisville_ky
+    name: "Louisville, KY"
+    state: KY
+    balanced_rank: 42
+    aliases: [louisville]
+    population_m: 1.38
+    salary_k: 65
+    real_net_k: 53
+    rpp: 94.5
+    rent_1br: 1050
+    solo_savings: 6036
+    starter_home_k: 175
+    years_20pct_solo: 5.8
+    entry_jobs: 140
+    total_jobs: 200
+    ce_raw: 71.0
+    cannabis_status: Medical-Restrictive
+    wm_index: 128
+    pct_pop_25_34: 14.5
+    scores: {ce: 1.3, col: 4.2, home: 2.6, mj: 2.0, dating: 4.0}
+
+  - id: indianapolis_in
+    name: "Indianapolis, IN"
+    state: IN
+    balanced_rank: 43
+    aliases: [indianapolis, indy, "carmel, in", "fishers, in"]
+    population_m: 2.15
+    salary_k: 68
+    real_net_k: 55
+    rpp: 94.5
+    rent_1br: 1100
+    solo_savings: 7984
+    starter_home_k: 175
+    years_20pct_solo: 4.4
+    entry_jobs: 160
+    total_jobs: 220
+    ce_raw: 54.1
+    cannabis_status: Banned
+    wm_index: 130
+    pct_pop_25_34: 15.2
+    scores: {ce: 1.1, col: 4.4, home: 3.5, mj: 1.0, dating: 4.0}
+
+  - id: memphis_tn
+    name: "Memphis, TN"
+    state: TN
+    balanced_rank: 44
+    aliases: [memphis, "germantown, tn", "collierville, tn"]
+    population_m: 1.34
+    salary_k: 65
+    real_net_k: 55
+    rpp: 94.5
+    rent_1br: 1100
+    solo_savings: 8049
+    starter_home_k: 155
+    years_20pct_solo: 3.9
+    entry_jobs: 33
+    total_jobs: 60
+    ce_raw: 13.5
+    cannabis_status: Banned
+    wm_index: 124
+    pct_pop_25_34: 14.8
+    scores: {ce: 0.3, col: 4.4, home: 3.9, mj: 1.0, dating: 4.2}
+
+  - id: miami_fl
+    name: "Miami, FL"
+    state: FL
+    balanced_rank: 45
+    aliases: [miami, "fort lauderdale, fl", "ft lauderdale, fl", "hialeah, fl", "miami beach, fl", "coral gables, fl", "boca raton, fl"]
+    population_m: 6.46
+    salary_k: 68
+    real_net_k: 50
+    rpp: 109.5
+    rent_1br: 2100
+    solo_savings: -1380
+    starter_home_k: 320
+    years_20pct_solo: null
+    entry_jobs: 270
+    total_jobs: 380
+    ce_raw: 29.7
+    cannabis_status: Medical-Easy
+    wm_index: 126
+    pct_pop_25_34: 14.6
+    scores: {ce: 1.2, col: 4.0, home: 0.0, mj: 4.5, dating: 4.1}
+
+  - id: birmingham_al
+    name: "Birmingham, AL"
+    state: AL
+    balanced_rank: 46
+    aliases: [birmingham, "hoover, al", "bham"]
+    population_m: 1.10
+    salary_k: 62
+    real_net_k: 51
+    rpp: 93.0
+    rent_1br: 1000
+    solo_savings: 4268
+    starter_home_k: 150
+    years_20pct_solo: 7.0
+    entry_jobs: 90
+    total_jobs: 140
+    ce_raw: 52.6
+    cannabis_status: Medical-Restrictive
+    wm_index: 125
+    pct_pop_25_34: 14.2
+    scores: {ce: 1.0, col: 4.1, home: 2.2, mj: 2.0, dating: 4.1}
+
+  - id: raleigh_nc
+    name: "Raleigh, NC"
+    state: NC
+    balanced_rank: 47
+    aliases: [raleigh, "durham, nc", "cary, nc", "chapel hill, nc", rdu, "research triangle"]
+    population_m: 1.66
+    salary_k: 70
+    real_net_k: 54
+    rpp: 98.0
+    rent_1br: 1400
+    solo_savings: 4533
+    starter_home_k: 260
+    years_20pct_solo: 11.5
+    entry_jobs: 150
+    total_jobs: 200
+    ce_raw: 67.8
+    cannabis_status: Decriminalized
+    wm_index: 130
+    pct_pop_25_34: 15.0
+    scores: {ce: 1.2, col: 4.3, home: 1.3, mj: 2.3, dating: 3.9}
+
+  - id: salt_lake_city_ut
+    name: "Salt Lake City, UT"
+    state: UT
+    balanced_rank: 48
+    aliases: [salt lake city, slc, "west valley city, ut", "sandy, ut", "provo, ut"]
+    population_m: 1.22
+    salary_k: 70
+    real_net_k: 52
+    rpp: 101.5
+    rent_1br: 1350
+    solo_savings: 4598
+    starter_home_k: 300
+    years_20pct_solo: 13.1
+    entry_jobs: 145
+    total_jobs: 200
+    ce_raw: 86.2
+    cannabis_status: Medical-Restrictive
+    wm_index: 133
+    pct_pop_25_34: 17.5
+    scores: {ce: 1.4, col: 4.2, home: 1.2, mj: 2.0, dating: 4.2}
+
+  - id: nashville_tn
+    name: "Nashville, TN"
+    state: TN
+    balanced_rank: 49
+    aliases: [nashville, "franklin, tn", "brentwood, tn", "music city"]
+    population_m: 2.11
+    salary_k: 70
+    real_net_k: 55
+    rpp: 100.5
+    rent_1br: 1550
+    solo_savings: 5814
+    starter_home_k: 280
+    years_20pct_solo: 9.6
+    entry_jobs: 198
+    total_jobs: 269
+    ce_raw: 69.1
+    cannabis_status: Banned
+    wm_index: 133
+    pct_pop_25_34: 16.0
+    scores: {ce: 1.4, col: 4.5, home: 1.6, mj: 1.0, dating: 3.9}
+
+  - id: austin_tx
+    name: "Austin, TX"
+    state: TX
+    balanced_rank: 50
+    aliases: [austin, "round rock, tx", "cedar park, tx", "georgetown, tx"]
+    population_m: 2.31
+    salary_k: 72
+    real_net_k: 59
+    rpp: 97.6
+    rent_1br: 1500
+    solo_savings: 8007
+    starter_home_k: 310
+    years_20pct_solo: 7.7
+    entry_jobs: 200
+    total_jobs: 280
+    ce_raw: 61.8
+    cannabis_status: Banned
+    wm_index: 162
+    pct_pop_25_34: 17.1
+    scores: {ce: 1.4, col: 4.7, home: 2.0, mj: 1.0, dating: 3.0}

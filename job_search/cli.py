@@ -100,6 +100,30 @@ def update_state(canonical_job_id: str, new_state: str, note: str | None):
             console.print(f"[red]Invalid transition to '{new_state}' for {canonical_job_id}[/red]")
 
 
+@cli.command(name="score-location")
+@click.argument("city")
+@click.option("--state", default=None, help="2-letter state code (helps disambiguate)")
+@click.option("--scheme", default=None, help="balanced | fit_first | career_first | career_relax | career_only")
+def score_location(city: str, state: str | None, scheme: str | None):
+    """Score a single location against the 50-metro framework."""
+    from job_search.location import LocationScorer
+    s = LocationScorer(scheme=scheme or "balanced")
+    result = s.score(city, state)
+    console.print(f"\n[bold]Location:[/bold] {city}{', ' + state if state else ''}")
+    console.print(f"[bold]Scheme:[/bold] {result.scheme}")
+    if result.metro_id:
+        console.print(f"[bold]Matched metro:[/bold] {result.metro_name} ({result.metro_id})")
+        console.print(f"[bold]Match kind:[/bold] {result.match_kind} (confidence {result.confidence:.2f})")
+        d = result.dimensions
+        console.print(
+            f"[bold]Dimensions[/bold] — CE:{d.ce:.1f} COL:{d.col:.1f} "
+            f"Home:{d.home:.1f} MJ:{d.mj:.1f} Dating:{d.dating:.1f}"
+        )
+    else:
+        console.print(f"[yellow]No ranked metro matched[/yellow] (kind={result.match_kind})")
+    console.print(f"[bold cyan]Composite:[/bold cyan] {result.composite:.1f}/100  → normalized {result.normalized:.3f}")
+
+
 @cli.command()
 def stats():
     """Print funnel statistics."""
