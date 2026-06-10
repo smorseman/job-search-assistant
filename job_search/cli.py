@@ -3,8 +3,8 @@
 import logging
 
 import click
-from rich.logging import RichHandler
 from rich.console import Console
+from rich.logging import RichHandler
 
 from job_search.config import settings
 
@@ -123,8 +123,8 @@ def generate(job_ids: tuple[str, ...], force: bool):
 def apply(job_id: str):
     """Mark a job as 'selected' and generate docs immediately."""
     from job_search.db import get_db
-    from job_search.tracking import advance_state
     from job_search.reporting import SelectionProcessor
+    from job_search.tracking import advance_state
 
     with get_db() as db:
         ok = advance_state(db, job_id, "selected", note="jsa apply CLI")
@@ -214,19 +214,75 @@ def score_location(city: str, state: str | None, scheme: str | None):
 
 @cli.command()
 def stats():
-    """Print funnel statistics."""
-    from job_search.db import get_db
-    with get_db() as db:
-        rows = db.execute(
-            "SELECT app_state, count(*) as cnt FROM jobs GROUP BY app_state ORDER BY cnt DESC"
-        ).fetchall()
-        console.print("\n[bold]Application funnel:[/bold]")
-        for row in rows:
-            console.print(f"  {row['app_state']:20} {row['cnt']:>5}")
+    """Print funnel statistics: where applications are, which sources convert."""
+    from rich.table import Table
 
-        source_rows = db.execute(
-            "SELECT source, count(*) as total, avg(match_score) as avg_score FROM jobs GROUP BY source ORDER BY total DESC"
-        ).fetchall()
-        console.print("\n[bold]By source:[/bold]")
-        for row in source_rows:
-            console.print(f"  {row['source']:20} {row['total']:>5} jobs  avg score {row['avg_score'] or 0:.2f}")
+    from job_search.reporting.funnel import FUNNEL_STAGES, FunnelReporter
+
+    stats = FunnelReporter().compute()
+    console.print(f"\n[bold]Total jobs in DB:[/bold] {stats.total_jobs}\n")
+
+    # ── Funnel ─────────────────────────────────────────────────────────────
+    console.print("[bold]Funnel (current state)[/bold]")
+    t = Table(show_header=True, header_style="bold")
+    t.add_column("State")
+    t.add_column("Count", justify="right")
+    t.add_column("Avg match", justify="right")
+    for stage in FUNNEL_STAGES + ["rejected", "ghosted"]:
+        n = stats.by_state.get(stage, 0)
+        if n == 0:
+            continue
+        avg = stats.avg_match_by_state.get(stage, 0)
+        t.add_row(stage, str(n), f"{avg:.3f}")
+    console.print(t)
+
+    # ── By source ──────────────────────────────────────────────────────────
+    if stats.by_source:
+        console.print("\n[bold]By source[/bold]")
+        t = Table(show_header=True, header_style="bold")
+        t.add_column("Source")
+        for col in ("discovered", "presented", "selected", "applied", "rejected"):
+            t.add_column(col, justify="right")
+        for src, states in sorted(stats.by_source.items()):
+            t.add_row(src, *(str(states.get(c, 0)) for c in ("discovered", "presented", "selected", "applied", "rejected")))
+        console.print(t)
+
+    # ── Response rates ─────────────────────────────────────────────────────
+    if stats.response_rate_by_source:
+        console.print("\n[bold]Response rates by source[/bold] (applied → got any response)")
+        t = Table(show_header=True, header_style="bold")
+        t.add_column("Source")
+        t.add_column("Applied", justify="right")
+        t.add_column("Responded", justify="right")
+        t.add_column("Response %", justify="right")
+        t.add_column("Screen %", justify="right")
+        t.add_column("Interview %", justify="right")
+        for src, r in sorted(stats.response_rate_by_source.items(),
+                              key=lambda kv: -kv[1]["response_rate"]):
+            t.add_row(
+                src,
+                str(r["applied"]),
+                str(r["responded"]),
+                f"{r['response_rate']:.1%}",
+                f"{r['screen_rate']:.1%}",
+                f"{r['interview_rate']:.1%}",
+            )
+        console.print(t)
+
+    # ── Stretch breakdown ──────────────────────────────────────────────────
+    if stats.by_stretch:
+        console.print("\n[bold]Stretch category × outcome[/bold]")
+        t = Table(show_header=True, header_style="bold")
+        t.add_column("Stretch")
+        for col in ("presented", "selected", "applied", "rejected", "ghosted"):
+            t.add_column(col, justify="right")
+        for stretch, states in sorted(stats.by_stretch.items()):
+            t.add_row(stretch, *(str(states.get(c, 0)) for c in ("presented", "selected", "applied", "rejected", "ghosted")))
+        console.print(t)
+
+    # ── Median timing ──────────────────────────────────────────────────────
+    if any(v is not None for v in stats.median_days.values()):
+        console.print("\n[bold]Median days (state transition)[/bold]")
+        for label, days in stats.median_days.items():
+            if days is not None:
+                console.print(f"  {label:25s} {days:.1f} days")

@@ -8,7 +8,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-
 SchemeName = Literal["fit_first", "balanced", "career_relax", "career_first", "career_only"]
 DEFAULT_SCHEME: SchemeName = "balanced"
 

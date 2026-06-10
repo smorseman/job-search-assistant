@@ -1,5 +1,7 @@
 # Job Search Assistant
 
+[![CI](https://github.com/smorseman/job-search-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/smorseman/job-search-assistant/actions/workflows/ci.yml)
+
 Automated civil-engineering job pipeline for James.
 
 Finds, scores, and tailors applications for civil engineering roles daily.
@@ -76,8 +78,8 @@ jsa score-location "Cleveland" --state OH --scheme career_only
 - [x] 6. Employer discovery pipeline + registry; remaining Green adapters
 - [x] 7. Workday (Yellow) adapter with throttling; self-healing / circuit breaker
 - [x] 8a. Gmail email-alert parser (LinkedIn / Indeed / ZipRecruiter / generic)
-- [ ] 8b. Remaining Green-tier adapters (Ashby / SmartRecruiters / Workable / Recruitee)
-- [ ] 8c. Funnel-stats reporting + GitHub Actions CI
+- [x] 8b. Remaining Green-tier adapters (Ashby / SmartRecruiters / Workable / Recruitee)
+- [x] 8c. Funnel-stats reporting + GitHub Actions CI
 
 ## See also
 

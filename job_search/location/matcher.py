@@ -19,7 +19,6 @@ from rapidfuzz import fuzz, process
 
 from .models import MetroArea
 
-
 # Fuzzy-match threshold — below this, fall through to fallback
 FUZZY_THRESHOLD = 88
 

@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterator
+from collections.abc import Iterator
 
 from job_search.config import settings
-from job_search.models import ATSType, CanonicalJob, KnockoutFields, RemoteFlag
+from job_search.models import ATSType, CanonicalJob
 
-from .base import BaseAdapter, AdapterError
+from .base import AdapterError, BaseAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,6 @@ class AdzunaAdapter(BaseAdapter):
         description = raw.get("description", "")
 
         location = raw.get("location", {})
-        display_loc = location.get("display_name", "")
         area = location.get("area", [])
         city = area[-1] if area else None
         state = area[-2] if len(area) >= 2 else None

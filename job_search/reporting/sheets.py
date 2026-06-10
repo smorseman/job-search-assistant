@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+import os
+import pickle
 
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import pickle
-import os
 
 from job_search.config import settings
 

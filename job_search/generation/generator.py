@@ -61,7 +61,6 @@ class DocumentGenerator:
         self._profile: dict | None = None
 
     def load_profile(self, path: str | None = None) -> None:
-        from pathlib import Path
         profile_path = path or settings.PROFILE_PATH
         if not Path(profile_path).exists():
             raise FileNotFoundError(
@@ -222,7 +221,7 @@ Write the cover letter JSON. Make it compelling for a human engineering hiring m
 
         name = f"{identity.get('first_name', '')} {identity.get('last_name', '')}".strip()
         if name:
-            heading = doc.add_heading(name, level=0)
+            doc.add_heading(name, level=0)
 
         contact_parts = [x for x in [
             identity.get("email"),

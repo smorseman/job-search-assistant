@@ -7,7 +7,6 @@ from datetime import datetime
 
 import yaml
 
-from job_search.config import settings
 from job_search.db import get_db
 from job_search.models import FirmConfig
 
@@ -78,13 +77,12 @@ class Ingestor:
     def _iter_all_sources(self):
         """Yield CanonicalJob from all configured sources in priority order."""
         from job_search.adapters import (
-            USAJobsAdapter,
+            ATS_ADAPTER_MAP,
             AdzunaAdapter,
-            GreenhouseAdapter,
-            LeverAdapter,
-            WorkdayAdapter,
             EmailAlertsAdapter,
+            USAJobsAdapter,
         )
+        from job_search.models import ATSTier
 
         # 1. Public sector (USAJOBS)
         yield from self._run_adapter(USAJobsAdapter())
@@ -94,20 +92,17 @@ class Ingestor:
 
         # 3. Green-tier firm adapters
         for firm in self._firms:
-            from job_search.models import ATSType, ATSTier
             if firm.ats_tier == ATSTier.GREEN:
-                adapter_cls = {
-                    ATSType.GREENHOUSE: GreenhouseAdapter,
-                    ATSType.LEVER: LeverAdapter,
-                }.get(firm.ats_type)
+                adapter_cls = ATS_ADAPTER_MAP.get(firm.ats_type)
                 if adapter_cls:
                     yield from self._run_adapter(adapter_cls(firm))
 
         # 4. Yellow-tier (Workday) — throttled
         for firm in self._firms:
-            from job_search.models import ATSType, ATSTier
-            if firm.ats_tier == ATSTier.YELLOW and firm.ats_type == ATSType.WORKDAY:
-                yield from self._run_adapter(WorkdayAdapter(firm))
+            if firm.ats_tier == ATSTier.YELLOW:
+                adapter_cls = ATS_ADAPTER_MAP.get(firm.ats_type)
+                if adapter_cls:
+                    yield from self._run_adapter(adapter_cls(firm))
 
         # 5. Email alerts — backstop for LinkedIn/Indeed (ruled out for direct scraping)
         yield from self._run_adapter(EmailAlertsAdapter())

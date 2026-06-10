@@ -7,7 +7,6 @@ Composite tolerances allow ±0.5 to account for rounding differences.
 import pytest
 
 from job_search.location import LocationScorer
-from job_search.location.matcher import CityMatcher
 
 
 @pytest.fixture(scope="module")

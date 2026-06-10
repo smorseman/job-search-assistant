@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterator
 from datetime import datetime
-from typing import Iterator
 
-from job_search.models import ATSType, CanonicalJob, FirmConfig, KnockoutFields, RemoteFlag
+from job_search.models import ATSType, CanonicalJob, FirmConfig, RemoteFlag
 
 from .base import BaseAdapter
 

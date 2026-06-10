@@ -1,6 +1,7 @@
 """Tests for deduplication and repost detection."""
 
 import sqlite3
+
 import pytest
 
 from job_search.db.connection import init_db

@@ -13,14 +13,14 @@ from __future__ import annotations
 import base64
 import logging
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass
 from email import message_from_bytes
-from typing import Iterator
 
 from job_search.config import settings
 from job_search.models import ATSType, CanonicalJob, RemoteFlag
 
-from .base import BaseAdapter, AdapterError
+from .base import AdapterError, BaseAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -67,8 +67,9 @@ class EmailAlertsAdapter(BaseAdapter):
     # ── Gmail wiring ──────────────────────────────────────────────────────────
 
     def _init_gmail(self) -> None:
-        from job_search.reporting.sheets import SheetsLogger
         from googleapiclient.discovery import build
+
+        from job_search.reporting.sheets import SheetsLogger
         creds = SheetsLogger()._get_creds()
         self._gmail = build("gmail", "v1", credentials=creds)
         self._processed_label_id = self._ensure_label(PROCESSED_LABEL_NAME)
@@ -197,7 +198,7 @@ class EmailAlertsAdapter(BaseAdapter):
             body,
             re.IGNORECASE,
         ):
-            url, _, jk, anchor = match.group(1), match.group(2), match.group(3), match.group(4).strip()
+            jk, anchor = match.group(3), match.group(4).strip()
             if jk in seen:
                 continue
             seen.add(jk)

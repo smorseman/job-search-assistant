@@ -1,6 +1,5 @@
 """Tests for match scoring engine."""
 
-import pytest
 
 from job_search.ingestion.scoring import Scorer
 from job_search.models import CanonicalJob, StretchCategory

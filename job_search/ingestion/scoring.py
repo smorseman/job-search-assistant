@@ -16,7 +16,7 @@ from pathlib import Path
 
 import yaml
 
-from job_search.location import LocationScorer, LocationScore
+from job_search.location import LocationScore, LocationScorer
 from job_search.location.models import SchemeName
 from job_search.models import CanonicalJob, StretchCategory
 

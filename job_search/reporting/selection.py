@@ -18,12 +18,11 @@ import logging
 import tempfile
 from datetime import date
 from pathlib import Path
-from typing import Iterable
 
 from job_search.config import settings
 from job_search.db import get_db
 from job_search.generation import DocumentGenerator
-from job_search.models import ATSType, AppState, CanonicalJob
+from job_search.models import AppState, ATSType, CanonicalJob
 
 from .sheets import SheetsLogger
 

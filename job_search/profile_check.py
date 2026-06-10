@@ -6,7 +6,6 @@ from pathlib import Path
 
 import yaml
 
-
 REQUIRED_PATHS: list[tuple[str, ...]] = [
     ("identity", "first_name"),
     ("identity", "last_name"),

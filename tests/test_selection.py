@@ -1,12 +1,13 @@
 """Tests for SelectionProcessor sync logic (no live Sheet calls)."""
 
-import pytest
 import sqlite3
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
+import pytest
 
 from job_search.db.connection import init_db
 from job_search.models import CanonicalJob
-from job_search.reporting.selection import SelectionProcessor, SHEET_TRIGGERS
+from job_search.reporting.selection import SelectionProcessor
 from job_search.reporting.sheets import SheetsLogger
 from job_search.tracking import advance_state
 

@@ -6,7 +6,6 @@ import logging
 from datetime import date
 
 from job_search.db import get_db
-from job_search.models import AppState
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,6 @@ class FollowUpEngine:
 
     def _auto_flag_ghosted(self, db, today: str) -> None:
         """Move applied → ghosted if GHOSTED_DAYS have passed with no progress."""
-        from datetime import datetime, timedelta
         cutoff = (date.today() - __import__("datetime").timedelta(days=GHOSTED_DAYS)).isoformat()
 
         stale = db.execute(

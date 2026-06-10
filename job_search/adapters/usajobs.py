@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterator
+from collections.abc import Iterator
 
 from job_search.config import settings
-from job_search.models import ATSType, CanonicalJob, KnockoutFields, RemoteFlag
+from job_search.models import ATSType, CanonicalJob, KnockoutFields
 
-from .base import BaseAdapter, AdapterError
+from .base import AdapterError, BaseAdapter
 
 logger = logging.getLogger(__name__)
 

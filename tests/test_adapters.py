@@ -1,10 +1,8 @@
 """Adapter unit tests — mock HTTP, no live API calls."""
 
-import json
-import pytest
 import httpx
 
-from job_search.models import FirmConfig, ATSType, ATSTier
+from job_search.models import ATSTier, ATSType, FirmConfig
 
 
 def greenhouse_firm() -> FirmConfig:
@@ -40,8 +38,7 @@ GREENHOUSE_RESPONSE = {
 
 
 def test_greenhouse_filters_non_civil(respx_mock):
-    import respx
-    from job_search.adapters.greenhouse import GreenhouseAdapter, BASE_URL
+    from job_search.adapters.greenhouse import BASE_URL, GreenhouseAdapter
 
     firm = greenhouse_firm()
     respx_mock.get(BASE_URL.format(token=firm.ats_board_token)).mock(
@@ -57,7 +54,7 @@ def test_greenhouse_filters_non_civil(respx_mock):
 
 
 def test_greenhouse_normalizes_location(respx_mock):
-    from job_search.adapters.greenhouse import GreenhouseAdapter, BASE_URL
+    from job_search.adapters.greenhouse import BASE_URL, GreenhouseAdapter
 
     firm = greenhouse_firm()
     respx_mock.get(BASE_URL.format(token=firm.ats_board_token)).mock(
@@ -71,7 +68,7 @@ def test_greenhouse_normalizes_location(respx_mock):
 
 
 def test_greenhouse_canonical_id_stable(respx_mock):
-    from job_search.adapters.greenhouse import GreenhouseAdapter, BASE_URL
+    from job_search.adapters.greenhouse import BASE_URL, GreenhouseAdapter
 
     firm = greenhouse_firm()
     respx_mock.get(BASE_URL.format(token=firm.ats_board_token)).mock(

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Iterator
+from collections.abc import Iterator
 
 import httpx
 
-from job_search.models import ATSType, CanonicalJob, FirmConfig, KnockoutFields
+from job_search.models import ATSType, CanonicalJob, FirmConfig
 
-from .base import BaseAdapter, AdapterError
+from .base import BaseAdapter
 
 logger = logging.getLogger(__name__)
 
