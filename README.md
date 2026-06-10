@@ -10,25 +10,29 @@ James reviews and submits — the system never submits on his behalf.
 ## Architecture
 
 ```
-Subsystem A (daily cron)                    Subsystem B (weekly)
-  USAJOBS API  ──┐                            ENR / ACEC seeds ──┐
-  Adzuna API   ──┤                            ATS fingerprinting ─┤
-  Greenhouse   ──┤ → dedup → score → DB       Registry config    ──┘
-  Lever        ──┤
-  Workday      ──┘
+Subsystem A (daily cron)                       Subsystem B (periodic)
+  USAJOBS · Adzuna · Greenhouse · Lever ──┐      ENR / ACEC seeds   ──┐
+  Ashby · SmartRecruiters · Workable     ──┤      ATS fingerprinting  ─┤
+  Recruitee · Workday · Gmail alerts     ──┘      Registry config-as-code ──┘
         │
         ▼
-  Document generation (Claude API)
+  Dedup + repost · Score (discipline + location + benefit + trajectory)
         │
         ▼
-  Daily report (Drive) + Google Sheets mirror
+  Daily report → Google Sheet  (no LLM)
         │
         ▼
-  James reviews → selects → submits
+  James reviews on phone/laptop, edits status column
         │
         ▼
-  State machine → follow-up engine → funnel stats
+  Sync Sheet → DB · Generate docs (Claude API) for jobs he flagged "apply"
+        │
+        ▼
+  Drive snapshots · Follow-up engine · Funnel stats
 ```
+
+LLM scope and the cost-aware "generate-on-selection" flow are documented in
+[docs/architecture.md](docs/architecture.md).
 
 ## Quick start
 
