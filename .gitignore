@@ -1,0 +1,49 @@
+# Environment & secrets
+.env
+*.env
+secrets/
+credentials.json
+token.json
+token_*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+.venv/
+venv/
+env/
+.python-version
+
+# Data (local DB — not committed; only schema is tracked)
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated documents (Drive is canonical)
+output/
+generated/
+
+# Logs
+*.log
+logs/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

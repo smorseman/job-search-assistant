@@ -1,0 +1,203 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# MASTER PROFILE — James
+# This file is the single source of truth for all resume and cover-letter
+# generation. Every claim in any generated document MUST trace to a field here.
+# Fill in ALL sections before running the pipeline for the first time.
+# ─────────────────────────────────────────────────────────────────────────────
+
+identity:
+  first_name: James
+  last_name: ""                 # FILL IN
+  email: ""                     # FILL IN
+  phone: ""                     # FILL IN
+  linkedin_url: ""              # FILL IN (optional)
+  github_url: ""                # FILL IN (optional)
+  location:
+    city: ""                    # FILL IN
+    state: ""                   # FILL IN
+    zip: ""                     # FILL IN
+
+# ── Eligibility & authorization ───────────────────────────────────────────────
+eligibility:
+  work_authorization: US_CITIZEN   # US_CITIZEN | PERMANENT_RESIDENT | H1B | OPT | OTHER
+  requires_sponsorship: false
+  security_clearance: NONE         # NONE | PUBLIC_TRUST | SECRET | TOP_SECRET
+
+# ── Relocation preferences ────────────────────────────────────────────────────
+relocation:
+  willing_to_relocate: true
+  # Metros that get a scoring PREMIUM (coastal/water, mountains, NYC, LA)
+  premium_metros:
+    - New York, NY
+    - Los Angeles, CA
+    - Seattle, WA
+    - Portland, OR
+    - Denver, CO
+    - San Francisco, CA
+    - Boston, MA
+    - Miami, FL
+    - Charleston, SC
+    - Anchorage, AK
+  # No hard exclusions — willing to go anywhere if opportunity is strong enough
+  excluded_metros: []
+
+# ── Salary ────────────────────────────────────────────────────────────────────
+compensation:
+  salary_floor_usd: null          # FILL IN (or leave null to omit from filters)
+  # Benefits that add scoring premium even if salary is unchanged
+  benefit_premiums:
+    - relocation_assistance
+    - signing_bonus
+    - tuition_reimbursement
+    - graduate_degree_assistance
+    - fe_exam_reimbursement
+    - pe_prep_reimbursement
+    - licensing_reimbursement
+    - continuing_education
+    - student_loan_assistance
+    - housing_assistance
+
+# ── Education ─────────────────────────────────────────────────────────────────
+education:
+  - degree: Bachelor of Science
+    major: Civil Engineering Technology   # CET — note: not BS Civil Engineering
+    institution: ""                        # FILL IN
+    graduation_date: ""                    # FILL IN (YYYY-MM)
+    gpa: null                              # FILL IN (optional — omit if below 3.0)
+    honors: []                             # e.g. ["Dean's List", "Magna Cum Laude"]
+    relevant_coursework:                   # FILL IN — list course titles
+      - Structural Analysis
+      - Steel Design
+      - Reinforced Concrete Design
+      - Soil Mechanics
+      - Foundation Engineering
+      - Transportation Engineering
+      - Hydraulics and Hydrology
+      - Surveying
+      - Construction Management
+      - Project Management
+      - Engineering Economics
+      # ADD MORE
+
+# ── Certifications & licensure ────────────────────────────────────────────────
+certifications:
+  fe_exam:
+    status: PENDING              # PASSED | PENDING | NOT_TAKEN
+    exam_date: "2026-08"         # Expected August 2026
+    discipline: CIVIL
+  pe_exam:
+    status: NOT_ELIGIBLE         # Not yet eligible (needs 4 yrs post-FE in most states)
+  other: []                      # e.g. OSHA-30, First Aid, etc.
+
+# ── Software proficiency ──────────────────────────────────────────────────────
+# Store BOTH long-form and acronym — the resume tailoring engine uses both
+software:
+  - name: AutoCAD Civil 3D
+    acronym: Civil 3D
+    proficiency: PROFICIENT       # PROFICIENT | FAMILIAR | BASIC
+  - name: AutoCAD
+    acronym: AutoCAD
+    proficiency: PROFICIENT
+  - name: Revit
+    acronym: Revit
+    proficiency: FAMILIAR
+  - name: HEC-RAS
+    acronym: HEC-RAS
+    proficiency: FAMILIAR
+  - name: Microsoft Project
+    acronym: MS Project
+    proficiency: FAMILIAR
+  - name: RAM Structural System
+    acronym: RAM
+    proficiency: PROFICIENT       # FILL IN actual level
+  - name: Geographic Information Systems
+    acronym: GIS
+    proficiency: FAMILIAR
+  - name: MicroStation
+    acronym: MicroStation
+    proficiency: BASIC
+  - name: Microsoft Office Suite
+    acronym: MS Office
+    proficiency: PROFICIENT
+  # ADD MORE
+
+# ── Discipline focus (weighted) ───────────────────────────────────────────────
+# Used for scoring — structural gets premium; others remain eligible
+discipline_weights:
+  structural: 1.0                # primary — highest weight
+  construction_engineering: 0.8
+  construction_management: 0.8
+  land_development: 0.7
+  site_civil: 0.7
+  transportation: 0.6
+  municipal: 0.6
+  water_resources: 0.5
+  environmental: 0.5
+  geotechnical: 0.5
+  federal: 0.5
+
+# ── Work experience ───────────────────────────────────────────────────────────
+# These are the pool of evidence for resume tailoring.
+# Add ALL experiences; the engine selects/reorders per posting.
+experience:
+  - id: exp_001
+    employer: ""                  # FILL IN
+    title: ""                     # FILL IN
+    type: INTERNSHIP              # INTERNSHIP | CO_OP | FULL_TIME | PART_TIME
+    start_date: ""                # YYYY-MM
+    end_date: ""                  # YYYY-MM or "present"
+    location: ""                  # City, ST
+    discipline_tags: []           # e.g. [structural, construction]
+    bullets:
+      # Write each bullet as a standalone fact; tailoring engine picks/reorders
+      - text: ""                  # FILL IN — use action verb + quantified outcome
+        discipline_tags: []       # tags that make this bullet more relevant
+        keywords: []              # explicit keywords to track coverage for
+    # ADD MORE experiences
+
+# ── Projects ──────────────────────────────────────────────────────────────────
+projects:
+  - id: proj_001
+    name: ""                      # FILL IN — e.g. "Senior Capstone — Bridge Redesign"
+    type: CAPSTONE                # CAPSTONE | CLASS_PROJECT | PERSONAL | COMPETITION
+    date: ""                      # YYYY-MM or YYYY
+    discipline_tags: []
+    role: ""                      # e.g. "Team Lead", "Structural Designer"
+    description: ""               # 1-2 sentences factual summary
+    bullets:
+      - text: ""
+        discipline_tags: []
+        keywords: []
+    software_used: []             # subset of software acronyms above
+    # ADD MORE projects
+
+# ── Leadership & activities ───────────────────────────────────────────────────
+activities:
+  - id: act_001
+    organization: ""              # FILL IN
+    role: ""                      # FILL IN
+    start_date: ""
+    end_date: ""
+    bullets:
+      - text: ""
+    # ADD MORE
+
+# ── Professional summary pool ─────────────────────────────────────────────────
+# These are BUILDING BLOCKS — the engine assembles and adapts per posting.
+# Write 1-sentence factual claims about James's strongest qualifications.
+summary_components:
+  structural:
+    - ""   # e.g. "Structural design experience with RAM Structural System, steel, and reinforced concrete"
+  construction:
+    - ""   # e.g. "Project leadership across [X] construction-related projects"
+  general:
+    - ""   # e.g. "Civil Engineering Technology graduate with BS from [Institution], May 2026"
+  # ADD MORE
+
+# ── Graduate school interest ──────────────────────────────────────────────────
+# Not a hard preference — surfaced as a flag in reports, not a filter
+graduate_school:
+  interested: true
+  target_degree: "M.S. Structural Engineering"
+  timeline: "2-4 years post-graduation"
+  notes: "Firms offering tuition reimbursement or proximity to strong programs should be flagged"

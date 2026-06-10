@@ -1,0 +1,21 @@
+# Scoring weight overrides — edit to tune after funnel data accrues
+# These override the hardcoded defaults in job_search/ingestion/scoring.py
+
+discipline_weights:
+  structural: 1.0
+  construction_engineering: 0.8
+  construction_management: 0.8
+  land_development: 0.7
+  site_civil: 0.7
+  transportation: 0.6
+  municipal: 0.6
+  water_resources: 0.5
+  environmental: 0.5
+  geotechnical: 0.5
+  federal: 0.5
+
+generation_threshold: 0.55      # min match_score to generate documents
+max_docs_per_run: 15            # cap daily document generation
+
+ghosted_days: 30                # days post-apply with no response → auto-flag ghosted
+followup_window_days: 14        # business-day follow-up window (14 calendar ≈ 10 business)

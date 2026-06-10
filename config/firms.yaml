@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Employer Registry — config-as-code
+#
+# Each record = one FirmConfig.  Adding a firm is a data change here.
+# Changes to this file (especially auto-heals) should be git-committed
+# so the config history is diffable, auditable, and revertible.
+#
+# Fields:
+#   firm_id        — unique slug (snake_case, auto-generated from name)
+#   name           — display name
+#   website        — company homepage
+#   careers_url    — careers/jobs page URL
+#   ats_type       — greenhouse | lever | workday | smartrecruiters | ashby | workable | icims | taleo | other | unknown
+#   ats_tier       — green | yellow | red | unknown
+#   ats_board_token — Greenhouse board token OR Lever company slug
+#   ats_tenant     — Workday tenant (e.g., "aecom")
+#   ats_site       — Workday site (e.g., "External")
+#   enr_rank       — ENR Top 500 rank (if known)
+#   specialties    — list of discipline tags
+#   known_benefits — list of benefit keys from spec §misc
+#   tuition_reimbursement — true/false
+#   pe_support     — true/false
+# ─────────────────────────────────────────────────────────────────────────────
+
+firms:
+  # ── Green tier examples (add real tokens after discovery) ─────────────────
+  - firm_id: example_green_firm
+    name: Example Green Firm
+    website: https://example.com
+    careers_url: https://boards.greenhouse.io/examplefirm
+    ats_type: greenhouse
+    ats_tier: green
+    ats_board_token: examplefirm      # replace with real token from discovery
+    specialties: [structural, construction]
+    known_benefits: [tuition_reimbursement, pe_prep_reimbursement]
+    tuition_reimbursement: true
+    pe_support: true
+
+  # ── Yellow tier (Workday) example ─────────────────────────────────────────
+  # - firm_id: aecom
+  #   name: AECOM
+  #   website: https://aecom.com
+  #   careers_url: https://aecom.wd1.myworkdayjobs.com/en-US/AECOM_Jobs
+  #   ats_type: workday
+  #   ats_tier: yellow
+  #   ats_tenant: aecom
+  #   ats_site: AECOM_Jobs
+  #   enr_rank: 1
+  #   specialties: [structural, transportation, water_resources, environmental]
+  #   known_benefits: [tuition_reimbursement, pe_prep_reimbursement, relocation_assistance]
+  #   tuition_reimbursement: true
+  #   pe_support: true
+
+  # Add firms here via `jsa discover-firm "Firm Name" https://firmwebsite.com`
+  # or populate manually from ENR Top 500 / ACEC directories.
