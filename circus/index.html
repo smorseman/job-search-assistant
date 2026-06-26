@@ -127,12 +127,14 @@
 <!-- D3 v7 (vendored locally; no CDN dependency) -->
 <script src="vendor/d3.min.js"></script>
 
-<!-- App scripts — order matters: data → visitor → model → circus → viz → main -->
+<!-- App scripts — order matters: data → visitor → model → circus → viz → bavarian → voice → main -->
 <script src="js/data.js"></script>
 <script src="js/visitor.js"></script>
 <script src="js/model.js"></script>
 <script src="js/circus.js"></script>
 <script src="js/viz.js"></script>
+<script src="js/bavarian.js"></script>
+<script src="js/voice.js"></script>
 <script>
 // ── Populate act selector ─────────────────────────────────────────────────
 const sel = document.getElementById("act-select");
@@ -201,6 +203,104 @@ btnStop.addEventListener("click", () => {
   circus.stopShow();
   btnRun.style.display  = "block";
   btnStop.style.display = "none";
+});
+</script>
+
+<!-- ── Bavarian Voice Chat ── -->
+<button id="voice-fab" title="Auf Deutsch sprechen (Antwort auf Bayrisch)">🎙️</button>
+
+<div id="chat-panel" class="hidden">
+  <div id="chat-header">
+    <h3>🎪 Servus! Sprechen Sie mit uns</h3>
+    <span>Antwort auf Bayrisch 🇩🇪</span>
+  </div>
+  <div id="chat-messages">
+    <div class="chat-msg system">Stellen Sie Ihre Frage auf Deutsch —<br>Antwort kommt auf Bayrisch! 🥨</div>
+  </div>
+  <div id="chat-input-row">
+    <input type="text" id="chat-text-input" placeholder="Auf Deutsch tippen…" autocomplete="off" />
+    <button id="btn-mic" title="Mikrofon">🎙️</button>
+    <button id="btn-send">Senden</button>
+  </div>
+</div>
+
+<script>
+// ── Voice chat glue ────────────────────────────────────────────────────────
+const chatPanel  = document.getElementById("chat-panel");
+const chatMsgs   = document.getElementById("chat-messages");
+const chatInput  = document.getElementById("chat-text-input");
+const btnMic     = document.getElementById("btn-mic");
+const btnSend    = document.getElementById("btn-send");
+const voiceFab   = document.getElementById("voice-fab");
+
+// Open / close panel
+voiceFab.addEventListener("click", () => {
+  const open = chatPanel.classList.toggle("hidden") === false;
+  voiceFab.classList.toggle("open", open);
+  if (open) chatInput.focus();
+});
+
+// Mic availability
+if (!VOICE.canListen) {
+  btnMic.classList.add("unavailable");
+  btnMic.title = "Spracherkennung nicht verfügbar (kein HTTPS / Browser-Support)";
+}
+
+function addMsg(text, role) {
+  const div = document.createElement("div");
+  div.className = `chat-msg ${role}`;
+  if (role === "bot") {
+    const flag = document.createElement("div");
+    flag.className = "msg-flag";
+    flag.textContent = "🥨 Bayrisch";
+    div.appendChild(flag);
+  }
+  div.appendChild(document.createTextNode(text));
+  chatMsgs.appendChild(div);
+  chatMsgs.scrollTop = chatMsgs.scrollHeight;
+}
+
+function handleInput(text) {
+  if (!text.trim()) return;
+  addMsg(text, "user");
+  chatInput.value = "";
+
+  const response = getBavarianResponse(text, circus);
+  setTimeout(() => {
+    addMsg(response, "bot");
+    VOICE.speak(response);
+  }, 180);
+}
+
+btnSend.addEventListener("click", () => handleInput(chatInput.value));
+chatInput.addEventListener("keydown", e => { if (e.key === "Enter") handleInput(chatInput.value); });
+
+// Mic button
+btnMic.addEventListener("click", () => {
+  if (!VOICE.canListen) return;
+
+  if (VOICE.listening) {
+    VOICE.stopListening();
+    btnMic.classList.remove("recording");
+    btnMic.textContent = "🎙️";
+    return;
+  }
+
+  btnMic.classList.add("recording");
+  btnMic.textContent = "⏹️";
+
+  VOICE.startListening(
+    transcript => {
+      btnMic.classList.remove("recording");
+      btnMic.textContent = "🎙️";
+      handleInput(transcript);
+    },
+    err => {
+      btnMic.classList.remove("recording");
+      btnMic.textContent = "🎙️";
+      addMsg(`Mikrofon-Fehler: ${err}. Bitte tippen Sie Ihre Frage! 🎙️`, "system");
+    }
+  );
 });
 </script>
 
