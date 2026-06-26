@@ -168,12 +168,18 @@ const VIZ = (() => {
 
     all.select("path")
       .transition().duration(500)
-      .attr("d", (d, i) => arc({
-        innerRadius: R * 0.35,
-        outerRadius: R * 0.35 + (d.staged ? R * 0.5 * d.meanSat + 12 : 8),
-        startAngle: (i / n) * tau,
-        endAngle: ((i + 1) / n) * tau - 0.02,
-      }))
+      .attrTween("d", function(d, i) {
+        const targetOuter = R * 0.35 + (d.staged ? R * 0.5 * d.meanSat + 12 : 8);
+        const prevOuter = parseFloat(this.getAttribute("data-outer") || R * 0.35 + 8);
+        this.setAttribute("data-outer", targetOuter);
+        const interp = d3.interpolate(prevOuter, targetOuter);
+        return t => arc({
+          innerRadius: R * 0.35,
+          outerRadius: interp(t),
+          startAngle: (i / n) * tau,
+          endAngle: ((i + 1) / n) * tau - 0.02,
+        });
+      })
       .attr("fill", d => d.staged ? ideologyColor(d.act.political_valence) : "#1e3a5f")
       .attr("opacity", d => d.staged ? 0.75 + 0.25 * d.meanSat : 0.3)
       .attr("stroke", d => (d.act === state.activeAct) ? "#e6a817" : "none")
@@ -221,11 +227,18 @@ const VIZ = (() => {
     const SA = -Math.PI / 1.1, EA = Math.PI / 1.1;
     const angle = SA + urge * (EA - SA);
 
+    // Use attrTween to interpolate the numeric endAngle, not the SVG path string.
+    // String interpolation of arc "d" values corrupts the binary arc-flag fields.
+    const prevAngle = gauge._prevAngle ?? SA;
+    gauge._prevAngle = angle;
     fillArc.transition().duration(500)
-      .attr("d", d3.arc()({
-        innerRadius: R - 16, outerRadius: R,
-        startAngle: SA, endAngle: angle,
-      }));
+      .attrTween("d", () => {
+        const interp = d3.interpolate(prevAngle, angle);
+        return t => d3.arc()({
+          innerRadius: R - 16, outerRadius: R,
+          startAngle: SA, endAngle: interp(t),
+        });
+      });
 
     const nx = (R * 0.65) * Math.sin(angle);
     const ny = -(R * 0.65) * Math.cos(angle);
